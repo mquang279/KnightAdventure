@@ -8,6 +8,14 @@
 
 using namespace std;
 
+typedef struct Input {
+	int left_;
+	int right_;
+	int up_;
+	int down_;
+	int jump_;
+};
+
 class Game {
 public:
 	Game();
@@ -20,7 +28,6 @@ public:
 	bool running();
 	static SDL_Renderer* gRenderer;
 private:
-	int frame, WALKING_ANIMATION_FRAMES;
 	const int SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 640;
 	bool isRunning;
 	SDL_Window* gWindow;

@@ -1,23 +1,21 @@
 #include "Game.h"
 #include "LTexture.h"
 #include "Map.h"
+#include "MainObject.h"
 
-LTexture playerTex;
 LTexture BGClouds;
 LTexture BGFarGround;
 LTexture BGSea;
 LTexture BGSky;
+MainObject playerObj;
+
 Map* map;
 
-int posX = 0, posY = 0;
 SDL_Renderer* Game::gRenderer = nullptr;
-SDL_Rect gSpriteClips[4];
 
 Game::Game() {
 	gWindow = NULL;
 	isRunning = true;
-	frame = 0;
-	WALKING_ANIMATION_FRAMES = 4;
 }
 Game::~Game() {
 
@@ -44,19 +42,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		}
 		isRunning = true;
 	}
-	playerTex.loadFromFile("assets/characters/idle.png");
+	playerObj.loadImage("assets/characters/running.png");
 	BGClouds.loadFromFile("assets/background/clouds2.png");
 	BGFarGround.loadFromFile("assets/background/far-grounds2.png");
 	BGSea.loadFromFile("assets/background/sea2.png");
 	BGSky.loadFromFile("assets/background/sky3.png");
+	playerObj.setSpriteClips();
 	map = new Map();
 	map->createTilesSprites();
-	for (int i = 0; i < 4; i++) {
-		gSpriteClips[i].x = i * playerTex.getWidth() / 4;
-		gSpriteClips[i].y = 0;
-		gSpriteClips[i].w = playerTex.getWidth() / 4;
-		gSpriteClips[i].h = playerTex.getHeight();
-	}
 }
 
 
@@ -68,6 +61,7 @@ void Game::handleEvent(){
 			isRunning = false;
 			break;
 		default:
+			playerObj.handleInput(e);
 			break;
 	}
 }
@@ -79,19 +73,14 @@ void Game::update(){
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
-	SDL_Rect* currentClip = &gSpriteClips[frame / 12];
 	BGSky.render(0, -50);
 	BGClouds.render(0, SCREEN_HEIGHT - BGClouds.getHeight() + 100);
 	//BGSea.render(0, 384);
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getHeight());
-	playerTex.render((SCREEN_WIDTH - currentClip->w) / 2, (SCREEN_HEIGHT - currentClip->h) / 2, currentClip);
+	playerObj.move();
+	playerObj.render();
 	map->drawMap();
 	SDL_RenderPresent(gRenderer);
-	++frame;
-	if (frame >= WALKING_ANIMATION_FRAMES * 12)
-	{
-		frame = 0;
-	}
 }
 
 void Game::close(){

@@ -10,7 +10,7 @@ Map::Map() {
 }
 
 void Map::createTilesSprites() {
-	mTileTexture.loadFromFile("assets/level/tileset.png");
+	mTileTexture.loadFromFile("assets/level/tileset2.png");
 	int xPos = 0, yPos = 0;
 	for (int i = 0; i < TOTAL_TILES_SPRITES; i++) {
 		gTileClip[i].x = xPos;
@@ -19,7 +19,7 @@ void Map::createTilesSprites() {
 		gTileClip[i].h = TILE_HEIGHT;
 		//cout << gTileClip[i].x << " " << gTileClip[i].y << " " << gTileClip[i].w << " " << gTileClip[i].h << endl;
 		xPos += 32;
-		if (xPos >= 16 * 32) {
+		if (xPos >= 58 * 32) {
 			xPos = 0;
 			yPos += 32;
 		}
@@ -27,8 +27,9 @@ void Map::createTilesSprites() {
 }
 
 void Map::loadMap() {
-	ifstream mp("assets/level/level1.map");
+	ifstream mp("assets/level/level2.map");
 	int x = 0, y = 0;
+	if (mp.fail()) cout << "failed";
 	for (int i = 0; i < TOTAL_TILES; i++) {
 		int tileType = -1;
 		mp >> tileType;
@@ -48,8 +49,9 @@ void Map::loadMap() {
 void Map::drawMap() {
 	int type = 0;
 	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 40; j++) {
+		for (int j = 0; j < 240; j++) {
 			type = map[i][j];
+			//cout << type << endl;
 			dest.x = j * 32;
 			dest.y = i * 32;
 			//cout << dest.x << " " << dest.y << " " << map[i][j] << endl;
