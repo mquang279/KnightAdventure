@@ -1,4 +1,5 @@
 #include "MainObject.h"
+#include "Map.h"
 
 MainObject::MainObject() {
 	mVelX = 0;
@@ -10,6 +11,11 @@ MainObject::MainObject() {
 	mHeight = 0;
 	playerStatus = -1;
 	flip = SDL_FLIP_NONE;
+	inputType.left_ = 0;
+	inputType.right_ = 0;
+	inputType.up_ = 0;
+	inputType.down_ = 0;
+	onGround = false;
 }
 
 MainObject::~MainObject(){}
@@ -17,8 +23,8 @@ MainObject::~MainObject(){}
 bool MainObject::loadImage(string path) {
 	bool success = mPlayerTexture.loadFromFile(path.c_str());
 	if (success) {
-		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES;
-		mHeight = mPlayerTexture.getHeight();
+		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES - 64;
+		mHeight = mPlayerTexture.getHeight() - 32;
 	}
 	return success;
 }
@@ -26,10 +32,10 @@ bool MainObject::loadImage(string path) {
 void MainObject::setSpriteClips() {
 	if (mWidth > 0 && mHeight > 0) {
 		for (int i = 0; i < ANIMATION_FRAMES; i++) {
-			mSpriteClips[i].x = i * mWidth;
-			mSpriteClips[i].y = 0;
-			mSpriteClips[i].w = mWidth;
-			mSpriteClips[i].h = mHeight;
+			mSpriteClipsRun[i].x = 32 + i * 128;
+			mSpriteClipsRun[i].y = 16;
+			mSpriteClipsRun[i].w = mWidth;
+			mSpriteClipsRun[i].h = mHeight;
 		}
 	}
 }
@@ -38,11 +44,14 @@ void MainObject::render() {
 	if (playerStatus == WALK_LEFT) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
-	else{
+	else {
 		flip = SDL_FLIP_NONE;
 	}
-	SDL_Rect* currentClip = &mSpriteClips[frame / 10];
-	mPlayerTexture.render(mPosX, mPosY, currentClip, NULL, NULL, flip);
+	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
+	mPlayerTexture.render(mPosX, mPosY + 10, currentClip, NULL, NULL, flip);
+	SDL_Rect hitBox = { mPosX, mPosY + 10, mWidth, mHeight };
+	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+	SDL_RenderDrawRect(Game::gRenderer, &hitBox);
 	frame++;
 	if (frame / 10 >= ANIMATION_FRAMES) frame = 0;
 }
@@ -50,42 +59,113 @@ void MainObject::render() {
 void MainObject::handleInput(SDL_Event& e) {
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
-		case SDLK_UP: mVelY -= POS_VEL; break;
-		case SDLK_DOWN: mVelY += POS_VEL; break;
 		case SDLK_RIGHT:
-			{
-			cout << "RIGHT" << endl;
-				mVelX += POS_VEL; 
-				playerStatus = WALK_RIGHT;
-			}
-			break;
-		case SDLK_LEFT:
-			{
-			cout << "LEFT" << endl;
-				mVelX -= POS_VEL;
-				playerStatus = WALK_LEFT;
-			}
-			break;
+		{
+			inputType.right_ = 1;
+			inputType.left_ = 0;
+			playerStatus = WALK_RIGHT;
 		}
-		
+		break;
+		case SDLK_LEFT:
+		{
+			inputType.right_ = 0;
+			inputType.left_ = 1;
+			playerStatus = WALK_LEFT;
+		}
+		break;
+		}
 	}
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
-		case SDLK_UP: mVelY += POS_VEL; break;
-		case SDLK_DOWN: mVelY -= POS_VEL; break;
-		case SDLK_RIGHT: mVelX -= POS_VEL; break;
-		case SDLK_LEFT: mVelX += POS_VEL; break;
+		case SDLK_RIGHT: inputType.right_ = 0; break;
+		case SDLK_LEFT: inputType.left_ = 0; break;
 		}
+	}
+
+}
+
+void MainObject::move(Map& map_data) {
+	mVelX = 0;
+	mVelY += GRAVITY_SPEED;
+	if (mVelY > MAX_GRAVITY_SPEED) {
+		mVelY = MAX_GRAVITY_SPEED;
+	}
+	if (inputType.left_ == 1) {
+		mVelX -= POS_VEL;
+	}
+	else if (inputType.right_ == 1) {
+		mVelX += POS_VEL;
+	}
+	int x1 = 0;
+	int x2 = 0;
+	int y1 = 0;
+	int y2 = 0;
+	int height_min = 0;
+
+	// Xu li va cham theo chieu doc
+	if (mHeight < TILE_SIZE) {
+		height_min = mHeight;
+	}
+	else height_min = TILE_SIZE;
+	x1 = (mPosX + mVelX) / TILE_SIZE;
+	x2 = (mPosX + mVelX + mWidth - 1) / TILE_SIZE;
+
+	y1 = (mPosY) / TILE_SIZE;
+	y2 = (mPosY + height_min - 1) / TILE_SIZE;
+
+	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
+		//Nhan vat di chuyen sang phai
+		if (mVelX > 0) {
+			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE){
+				mPosX = x2 * TILE_SIZE;
+				mPosX -= mWidth + 1;
+				mVelX = 0;
+			}
+		}
+		//Nhan vat di chuyen sang trai
+		else if (mVelX < 0) {
+			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE){
+				mPosX = (x1 + 1) * TILE_SIZE;
+				mVelX = 0;
+			}
+		}
+	}
+
+	//Xu li va cham theo chieu ngang
+
+	int width_min = 0;
+	if (mWidth < TILE_SIZE) width_min = mWidth;
+	else width_min = TILE_SIZE;
+	x1 = (mPosX) / TILE_SIZE;
+	x2 = (mPosX + width_min) / TILE_SIZE;
+	y1 = (mPosY + mVelY) / TILE_SIZE;
+	y2 = (mPosY + mVelY + mHeight - 1) / TILE_SIZE;
+	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
+		if (mVelY > 0) {
+			if (map_data.map[y2][x1] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE) {
+				mPosY = y2 * TILE_SIZE;
+				mPosY -= (mHeight - 1);
+				mVelY = 0;
+				onGround = true;
+			}
+
+		}
+		else if (mVelY < 0) {
+			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y1][x2] != BLANK_TILE) {
+				mPosY = (y1 + 1) * TILE_SIZE;
+				mVelY = 0;
+				cout << "mVelY < 0" << endl;
+			}
+		}
+	}
+
+	mPosX += mVelX;
+	mPosY += mVelY;
+	if (mPosX < 0) {
+		mPosX = 0;
+	}
+	if (mPosX < 0 && (mPosX + mWidth) > TOTAL_TILES_ROW) {
+		mPosX = TOTAL_TILES_ROW - mWidth - 1;
 	}
 }
 
-void MainObject::move() {
-	mPosX += mVelX;
-	if (mPosX < 0 || (mPosX + mWidth) > 1280) {
-		mPosX -= mVelX;
-	}
-	mPosY += mVelY;
-	if (mPosY < 0 || (mPosY + mHeight) > 640) {
-		mPosY -= mVelY;
-	}
-}

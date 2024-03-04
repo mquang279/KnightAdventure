@@ -10,8 +10,10 @@ LTexture BGSky;
 MainObject playerObj;
 
 Map* map;
+Map* grass;
 
 SDL_Renderer* Game::gRenderer = nullptr;
+
 
 Game::Game() {
 	gWindow = NULL;
@@ -49,7 +51,11 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	BGSky.loadFromFile("assets/background/sky3.png");
 	playerObj.setSpriteClips();
 	map = new Map();
+	grass = new Map();
+	map->loadMap("assets/level/mapfinal.map");
+	grass->loadMap("assets/level/grassfinal.map");
 	map->createTilesSprites();
+	grass->createTilesSprites();
 }
 
 
@@ -67,7 +73,7 @@ void Game::handleEvent(){
 }
 
 void Game::update(){
-	map->loadMap();
+
 }
 
 void Game::render(){
@@ -77,9 +83,10 @@ void Game::render(){
 	BGClouds.render(0, SCREEN_HEIGHT - BGClouds.getHeight() + 100);
 	//BGSea.render(0, 384);
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getHeight());
-	playerObj.move();
-	playerObj.render();
+	playerObj.move(*map);
 	map->drawMap();
+	grass->drawMap();
+	playerObj.render();
 	SDL_RenderPresent(gRenderer);
 }
 

@@ -26,8 +26,8 @@ void Map::createTilesSprites() {
 	}
 }
 
-void Map::loadMap() {
-	ifstream mp("assets/level/level2.map");
+void Map::loadMap(string path) {
+	ifstream mp(path.c_str());
 	int x = 0, y = 0;
 	if (mp.fail()) cout << "failed";
 	for (int i = 0; i < TOTAL_TILES; i++) {
