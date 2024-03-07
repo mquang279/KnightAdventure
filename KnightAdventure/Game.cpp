@@ -84,8 +84,8 @@ void Game::render(){
 	//BGSea.render(0, 384);
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getHeight());
 	playerObj.move(*map);
-	map->drawMap();
-	grass->drawMap();
+	map->drawMap(playerObj.getMapX());
+	grass->drawMap(playerObj.getMapX());
 	playerObj.render();
 	SDL_RenderPresent(gRenderer);
 }

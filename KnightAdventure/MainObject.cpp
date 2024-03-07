@@ -44,14 +44,13 @@ void MainObject::render() {
 	if (playerStatus == WALK_LEFT) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
-	else {
+	else if (playerStatus == WALK_RIGHT){
 		flip = SDL_FLIP_NONE;
 	}
 	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
-	mPlayerTexture.render(mPosX, mPosY + 10, currentClip, NULL, NULL, flip);
-	SDL_Rect hitBox = { mPosX, mPosY + 10, mWidth, mHeight };
+	mPlayerTexture.render(mPosX - mapX, mPosY + 10, currentClip, NULL, NULL, flip);
+	SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(Game::gRenderer, &hitBox);
 	frame++;
 	if (frame / 10 >= ANIMATION_FRAMES) frame = 0;
 }
@@ -73,12 +72,17 @@ void MainObject::handleInput(SDL_Event& e) {
 			playerStatus = WALK_LEFT;
 		}
 		break;
+		case SDLK_UP:
+		{
+			inputType.up_ = 1;
+		}
 		}
 	}
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
 		case SDLK_RIGHT: inputType.right_ = 0; break;
 		case SDLK_LEFT: inputType.left_ = 0; break;
+		case SDLK_UP: inputType.up_ = 0; break;
 		}
 	}
 
@@ -96,6 +100,14 @@ void MainObject::move(Map& map_data) {
 	else if (inputType.right_ == 1) {
 		mVelX += POS_VEL;
 	}
+
+	if (inputType.up_ == 1) {
+		if (onGround){
+			mVelY = -JUMP_VAL;
+		}
+		inputType.up_ = 0;
+	}
+
 	int x1 = 0;
 	int x2 = 0;
 	int y1 = 0;
@@ -112,6 +124,7 @@ void MainObject::move(Map& map_data) {
 
 	y1 = (mPosY) / TILE_SIZE;
 	y2 = (mPosY + height_min - 1) / TILE_SIZE;
+	onGround = false;
 
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		//Nhan vat di chuyen sang phai
@@ -154,7 +167,6 @@ void MainObject::move(Map& map_data) {
 			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y1][x2] != BLANK_TILE) {
 				mPosY = (y1 + 1) * TILE_SIZE;
 				mVelY = 0;
-				cout << "mVelY < 0" << endl;
 			}
 		}
 	}
@@ -164,8 +176,25 @@ void MainObject::move(Map& map_data) {
 	if (mPosX < 0) {
 		mPosX = 0;
 	}
-	if (mPosX < 0 && (mPosX + mWidth) > TOTAL_TILES_ROW) {
-		mPosX = TOTAL_TILES_ROW - mWidth - 1;
+	if ((mPosX + mWidth) > TOTAL_TILES_ROW * TILE_SIZE) {
+		mPosX = TOTAL_TILES_ROW * TILE_SIZE - mWidth - 1;
 	}
+	centerEntityOnMap();
+}
+
+void MainObject::centerEntityOnMap() {
+	if (mPosY < 640) {
+		mapX = mPosX - (1280 / 2);
+	}
+	if (mapX < 0) {
+		mapX = 0;
+	}
+	else if (mapX + 1280 >= TOTAL_TILES_ROW * TILE_SIZE) {
+		mapX = TOTAL_TILES_ROW * TILE_SIZE - 1280;
+	}
+}
+
+int MainObject::getMapX() {
+	return mapX;
 }
 

@@ -46,7 +46,7 @@ void Map::loadMap(string path) {
 	}
 }
 
-void Map::drawMap() {
+void Map::drawMap(int mapX) {
 	int type = 0;
 	for (int i = 0; i < 20; i++) {
 		for (int j = 0; j < 240; j++) {
@@ -55,7 +55,7 @@ void Map::drawMap() {
 			dest.x = j * 32;
 			dest.y = i * 32;
 			//cout << dest.x << " " << dest.y << " " << map[i][j] << endl;
-			mTileTexture.render(dest.x, dest.y, &gTileClip[type]);
+			mTileTexture.render(dest.x - mapX, dest.y, &gTileClip[type]);
 		}
 	}
 }
