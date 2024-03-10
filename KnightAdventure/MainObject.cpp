@@ -23,8 +23,8 @@ MainObject::~MainObject(){}
 bool MainObject::loadImage(string path) {
 	bool success = mPlayerTexture.loadFromFile(path.c_str());
 	if (success) {
-		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES - 64;
-		mHeight = mPlayerTexture.getHeight() - 32;
+		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES;
+		mHeight = mPlayerTexture.getHeight();
 	}
 	return success;
 }
@@ -32,8 +32,8 @@ bool MainObject::loadImage(string path) {
 void MainObject::setSpriteClips() {
 	if (mWidth > 0 && mHeight > 0) {
 		for (int i = 0; i < ANIMATION_FRAMES; i++) {
-			mSpriteClipsRun[i].x = 32 + i * 128;
-			mSpriteClipsRun[i].y = 16;
+			mSpriteClipsRun[i].x = i * 64;
+			mSpriteClipsRun[i].y = 0;
 			mSpriteClipsRun[i].w = mWidth;
 			mSpriteClipsRun[i].h = mHeight;
 		}
@@ -41,18 +41,29 @@ void MainObject::setSpriteClips() {
 }
 
 void MainObject::render() {
+	int currentFrame = 0;
 	if (playerStatus == WALK_LEFT) {
 		flip = SDL_FLIP_HORIZONTAL;
+		currentFrame = ANIMATION_FRAMES;
+		mPlayerTexture.loadFromFile("assets/characters/running.png");
 	}
 	else if (playerStatus == WALK_RIGHT){
 		flip = SDL_FLIP_NONE;
+		currentFrame = ANIMATION_FRAMES;
+		mPlayerTexture.loadFromFile("assets/characters/running.png");
+
+	}
+	if (mVelX == 0 && mVelY == 0) {
+		mPlayerTexture.loadFromFile("assets/characters/idle.png");
+		currentFrame = IDLE_FRAMES;
 	}
 	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
 	mPlayerTexture.render(mPosX - mapX, mPosY + 10, currentClip, NULL, NULL, flip);
-	SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
+	//SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+	//SDL_RenderDrawRect(Game::gRenderer, &hitBox);
 	frame++;
-	if (frame / 10 >= ANIMATION_FRAMES) frame = 0;
+	if (frame / 10 >= currentFrame) frame = 0;
 }
 
 void MainObject::handleInput(SDL_Event& e) {
