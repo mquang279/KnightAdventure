@@ -14,7 +14,6 @@ const float JUMP_VAL = 16;
 class MainObject : public LTexture {
 public:
 	MainObject();
-	~MainObject();
 	const static int POS_VEL = 5;
 	enum WalkType {
 		PLAYER_IDLE = -1,
@@ -30,6 +29,8 @@ public:
 	void setWidthHeight();
 	int getMapX();
 	void centerEntityOnMap();
+	float getPosX();
+	float getPosY();
 private:
 	int numberClips;
 	SDL_RendererFlip flip;

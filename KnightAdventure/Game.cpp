@@ -2,18 +2,20 @@
 #include "LTexture.h"
 #include "Map.h"
 #include "MainObject.h"
+#include "Background.h"
 
-LTexture BGClouds;
-LTexture BGFarGround;
-LTexture BGSea;
-LTexture BGSky;
+BGTexture BGFarGround;
+BGTexture BGSea;
+BGTexture BGSky;
 MainObject playerObj;
+BGTexture BGClouds;
 
 Map* map;
 Map* grass;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
+float scrollingOffset = 0;
 
 Game::Game() {
 	gWindow = NULL;
@@ -45,10 +47,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		isRunning = true;
 	}
 	playerObj.loadImage("assets/characters/running.png");
-	BGClouds.loadFromFile("assets/background/clouds2.png");
-	BGFarGround.loadFromFile("assets/background/far-grounds2.png");
-	BGSea.loadFromFile("assets/background/sea2.png");
-	BGSky.loadFromFile("assets/background/sky3.png");
+	BGClouds.loadBackground("assets/background/clouds2.png");
+	BGFarGround.loadBackground("assets/background/far-grounds2.png");
+	BGSea.loadBackground("assets/background/sea2.png");
+	BGSky.loadBackground("assets/background/sky4.png");
 	playerObj.setSpriteClips();
 	map = new Map();
 	grass = new Map();
@@ -56,6 +58,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	grass->loadMap("assets/level/grassfinal.map");
 	map->createTilesSprites();
 	grass->createTilesSprites();
+	BGClouds.loadBackground("assets/background/clouds2.png");
 }
 
 
@@ -73,16 +76,17 @@ void Game::handleEvent(){
 }
 
 void Game::update(){
-
+	scrollingOffset -= 0.5;
+	if (scrollingOffset < -BGClouds.getBGWidth()) scrollingOffset = 0;
 }
 
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
-	BGSky.render(0, -50);
-	BGClouds.render(0, SCREEN_HEIGHT - BGClouds.getHeight() + 100);
-	//BGSea.render(0, 384);
-	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getHeight());
+	BGSky.render(0, 0);
+	BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+	BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
 	playerObj.move(*map);
 	map->drawMap(playerObj.getMapX());
 	grass->drawMap(playerObj.getMapX());

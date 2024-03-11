@@ -18,8 +18,6 @@ MainObject::MainObject() {
 	onGround = false;
 }
 
-MainObject::~MainObject(){}
-
 bool MainObject::loadImage(string path) {
 	bool success = mPlayerTexture.loadFromFile(path.c_str());
 	if (success) {
@@ -59,7 +57,7 @@ void MainObject::render() {
 	}
 	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
 	mPlayerTexture.render(mPosX - mapX, mPosY + 10, currentClip, NULL, NULL, flip);
-	//SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
+	SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
 	//SDL_RenderDrawRect(Game::gRenderer, &hitBox);
 	frame++;
@@ -207,5 +205,13 @@ void MainObject::centerEntityOnMap() {
 
 int MainObject::getMapX() {
 	return mapX;
+}
+
+float MainObject::getPosX() {
+	return mPosX;
+}
+
+float MainObject::getPosY() {
+	return mPosY;
 }
 

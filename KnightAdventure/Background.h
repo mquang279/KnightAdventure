@@ -5,9 +5,13 @@
 
 class BGTexture {
 public:
-
+	BGTexture();
+	void render(int x, int y);
+	bool loadBackground(string path);
+	int getBGWidth();
+	int getBGHeight();
 private:
-	LTexture mBackgroundFirst;
-	LTexture mBackgroundSecond;
-	int mPosX, mPosY;
+	LTexture mBackground;
+	int mPosBGX, mPosBGY;
+	int mBGWidth, mBGHeight;
 };
