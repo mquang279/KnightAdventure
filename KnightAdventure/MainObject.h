@@ -4,6 +4,7 @@
 #include "LTexture.h"
 
 const int ANIMATION_FRAMES = 8;
+const int ATTACK_FRAMES = 8;
 const int IDLE_FRAMES = 4;
 const int JUMP_FRAMES = 15;
 const int TILE_SIZE = 32;
@@ -20,6 +21,7 @@ public:
 		WALK_RIGHT = 0,
 		WALK_LEFT = 1,
 		PLAYER_JUMP = 2,
+		PLAYER_ATTACK = 3,
 	};
 	bool loadImage(string path);
 	void handleInput(SDL_Event& e);
@@ -36,8 +38,13 @@ private:
 	SDL_RendererFlip flip;
 	float mVelX, mVelY;
 	float mPosX, mPosY;
+	float mFixX, mFixY;
+	float mPlayerHitBoxX, mPlayerHitBoxY, mPlayerHitBoxW, mPlayerHitBoxH;
 	int mWidth, mHeight;
 	SDL_Rect mSpriteClipsRun[ANIMATION_FRAMES];
+	SDL_Rect mSpriteClipsAttack[ATTACK_FRAMES];
+	SDL_Rect playerHitBox;
+	SDL_Rect attackHitBox;
 	Input inputType;
 	int frame;
 	int playerStatus;

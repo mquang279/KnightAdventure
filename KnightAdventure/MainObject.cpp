@@ -2,6 +2,10 @@
 #include "Map.h"
 
 MainObject::MainObject() {
+	mPlayerHitBoxX = 0;
+	mPlayerHitBoxY = 0;
+	mPlayerHitBoxH = 0;
+	mPlayerHitBoxW = 0;
 	mVelX = 0;
 	mVelY = 0;
 	mPosX = 0;
@@ -9,6 +13,8 @@ MainObject::MainObject() {
 	frame = 0;
 	mWidth = 0;
 	mHeight = 0;
+	mFixX = 0;
+	mFixY = 0;
 	playerStatus = -1;
 	flip = SDL_FLIP_NONE;
 	inputType.left_ = 0;
@@ -34,34 +40,93 @@ void MainObject::setSpriteClips() {
 			mSpriteClipsRun[i].y = 0;
 			mSpriteClipsRun[i].w = mWidth;
 			mSpriteClipsRun[i].h = mHeight;
+
+			mSpriteClipsAttack[i].x = i * 144;
+			mSpriteClipsAttack[i].y = 0;
+			mSpriteClipsAttack[i].w = 144;
+			mSpriteClipsAttack[i].h = 128;
 		}
 	}
 }
 
 void MainObject::render() {
-	int currentFrame = 0;
-	if (playerStatus == WALK_LEFT) {
+	int currentFrame = ANIMATION_FRAMES;
+	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
+	mFixX = 0;
+	mFixY = 10;
+	mPlayerTexture.loadFromFile("assets/characters/running.png");
+	if (playerStatus == WALK_LEFT){
+		mPlayerTexture.loadFromFile("assets/characters/running.png");
 		flip = SDL_FLIP_HORIZONTAL;
 		currentFrame = ANIMATION_FRAMES;
-		mPlayerTexture.loadFromFile("assets/characters/running.png");
+		currentClip = &mSpriteClipsRun[frame / 10];
+		mPlayerHitBoxX = 0;
+		mPlayerHitBoxY = 16;
+		mPlayerHitBoxW = -32;
+		mPlayerHitBoxH = -32;
 	}
 	else if (playerStatus == WALK_RIGHT){
+		mPlayerTexture.loadFromFile("assets/characters/running.png");
 		flip = SDL_FLIP_NONE;
 		currentFrame = ANIMATION_FRAMES;
-		mPlayerTexture.loadFromFile("assets/characters/running.png");
-
+		currentClip = &mSpriteClipsRun[frame / 10];
+		mFixX = 0;
+		mFixY = 10;
+		mPlayerHitBoxX = 32;
+		mPlayerHitBoxY = 16;
+		mPlayerHitBoxW = -32;
+		mPlayerHitBoxH = -32;
 	}
-	if (mVelX == 0 && mVelY == 0) {
+	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
+		mPlayerTexture.loadFromFile("assets/characters/attack.png");
+		currentFrame = ATTACK_FRAMES;
+		currentClip = &mSpriteClipsAttack[frame / 10];
+		if (flip == SDL_FLIP_NONE) {
+			mFixX = -64;
+			mFixY = -16 + 10;
+
+			mPlayerHitBoxX = 64;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64;
+		}
+		else {
+			mFixX = -32;
+			mFixY = -16 + 10;
+
+			mPlayerHitBoxX = 48;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64;
+		}
+	}
+	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK) {
 		mPlayerTexture.loadFromFile("assets/characters/idle.png");
 		currentFrame = IDLE_FRAMES;
+		currentClip = &mSpriteClipsRun[frame / 10];
+		if (flip == SDL_FLIP_NONE) {
+			mPlayerHitBoxX = 0;
+			mPlayerHitBoxY = 16;
+			mPlayerHitBoxW = -32;
+			mPlayerHitBoxH = -32;
+		}
+		else {
+			mPlayerHitBoxX = 32;
+			mPlayerHitBoxY = 16;
+			mPlayerHitBoxW = -32;
+			mPlayerHitBoxH = -32;
+		}
 	}
-	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
-	mPlayerTexture.render(mPosX - mapX, mPosY + 10, currentClip, NULL, NULL, flip);
-	SDL_Rect hitBox = { mPosX - mapX, mPosY + 10, mWidth, mHeight };
+	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
+	SDL_Rect hitBox1 = { mPosX - mapX + mFixX, mPosY + mFixY, currentClip->w, currentClip->h };
+	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
+	playerHitBox = hitBox2;
+	attackHitBox = hitBox1;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	//SDL_RenderDrawRect(Game::gRenderer, &hitBox);
+	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
-	if (frame / 10 >= currentFrame) frame = 0;
+	if (frame / 8 >= currentFrame) frame = 0;
 }
 
 void MainObject::handleInput(SDL_Event& e) {
@@ -85,6 +150,11 @@ void MainObject::handleInput(SDL_Event& e) {
 		{
 			inputType.up_ = 1;
 		}
+		break;
+		case SDLK_SPACE:
+		{
+			playerStatus = PLAYER_ATTACK;
+		}
 		}
 	}
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
@@ -92,6 +162,7 @@ void MainObject::handleInput(SDL_Event& e) {
 		case SDLK_RIGHT: inputType.right_ = 0; break;
 		case SDLK_LEFT: inputType.left_ = 0; break;
 		case SDLK_UP: inputType.up_ = 0; break;
+		case SDLK_SPACE: playerStatus = PLAYER_IDLE; break;
 		}
 	}
 
@@ -111,7 +182,7 @@ void MainObject::move(Map& map_data) {
 	}
 
 	if (inputType.up_ == 1) {
-		if (onGround){
+		if (onGround && playerStatus != PLAYER_ATTACK){
 			mVelY = -JUMP_VAL;
 		}
 		inputType.up_ = 0;
@@ -179,7 +250,10 @@ void MainObject::move(Map& map_data) {
 			}
 		}
 	}
-
+	if (playerStatus == PLAYER_ATTACK && onGround) {
+		mVelX = 0;
+		mVelY = 0;
+	}
 	mPosX += mVelX;
 	mPosY += mVelY;
 	if (mPosX < 0) {
@@ -189,6 +263,7 @@ void MainObject::move(Map& map_data) {
 		mPosX = TOTAL_TILES_ROW * TILE_SIZE - mWidth - 1;
 	}
 	centerEntityOnMap();
+	
 }
 
 void MainObject::centerEntityOnMap() {
@@ -214,4 +289,5 @@ float MainObject::getPosX() {
 float MainObject::getPosY() {
 	return mPosY;
 }
+
 
