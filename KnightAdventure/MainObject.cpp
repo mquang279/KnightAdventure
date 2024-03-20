@@ -89,6 +89,11 @@ void MainObject::render() {
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
+
+			mAttackHitBoxX = 48;
+			mAttackHitBoxY = 0;
+			mAttackHitBoxW = -55;
+			mAttackHitBoxH = -48;
 		}
 		else {
 			mFixX = -32;
@@ -98,6 +103,11 @@ void MainObject::render() {
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
+
+			mAttackHitBoxX = 7;
+			mAttackHitBoxY = 0;
+			mAttackHitBoxW = -55;
+			mAttackHitBoxH = -48;
 		}
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK) {
@@ -118,12 +128,12 @@ void MainObject::render() {
 		}
 	}
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
-	SDL_Rect hitBox1 = { mPosX - mapX + mFixX, mPosY + mFixY, currentClip->w, currentClip->h };
+	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClipsAttack[0].w + mAttackHitBoxW, mSpriteClipsAttack[0].h + mAttackHitBoxH};
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 8 >= currentFrame) frame = 0;

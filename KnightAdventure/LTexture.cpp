@@ -21,7 +21,7 @@ LTexture::~LTexture() {
 bool LTexture::loadFromFile(string path) {
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface) {
-		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 255, 255));
+		//SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 255, 255));
 		mTexture = SDL_CreateTextureFromSurface(Game::gRenderer, loadedSurface);
 		if (mTexture) {
 			mWidth = loadedSurface->w;

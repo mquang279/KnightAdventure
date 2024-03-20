@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "MainObject.h"
 #include "Background.h"
+#include "Enemy.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -17,6 +18,24 @@ SDL_Renderer* Game::gRenderer = nullptr;
 
 float scrollingOffset = 0;
 
+vector<Enemy*> Enemy_list;
+
+vector<Enemy*> createEnemyList() {
+	vector<Enemy*> list_enemy;
+	Enemy* enemy_obj = new Enemy[10];
+	for (int i = 0; i < 10; i++) {
+		Enemy* p_enemy = enemy_obj + i;
+		if (p_enemy != NULL) {
+			p_enemy->loadImage("assets/enemy/dog/dog-run.png");
+			p_enemy->setSpriteClips();
+			p_enemy->setPosX(1280 + rand() % 300 + i * 800);
+			p_enemy->setPosY(0);
+			list_enemy.push_back(p_enemy);
+		}
+	}
+	return list_enemy;
+}
+
 Game::Game() {
 	gWindow = NULL;
 	isRunning = true;
@@ -26,6 +45,7 @@ Game::~Game() {
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
+	srand(time(nullptr));
 	int flags = 0;
 	if (fullscreen) {
 		flags = SDL_WINDOW_FULLSCREEN;
@@ -51,6 +71,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
 	BGSky.loadBackground("assets/background/sky4.png");
+	Enemy_list = createEnemyList();
 	playerObj.setSpriteClips();
 	map = new Map();
 	grass = new Map();
@@ -90,6 +111,13 @@ void Game::render(){
 	playerObj.move(*map);
 	map->drawMap(playerObj.getMapX());
 	grass->drawMap(playerObj.getMapX());
+	for (int i = 0; i < Enemy_list.size(); i++) {
+		Enemy* p_enemy = Enemy_list[i];
+		if (p_enemy != NULL) {
+			p_enemy->move(*map);
+			p_enemy->render(playerObj.getMapX());
+		}
+	}
 	playerObj.render();
 	SDL_RenderPresent(gRenderer);
 }
