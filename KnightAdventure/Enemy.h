@@ -4,7 +4,6 @@
 #include "LTexture.h"
 #include "Map.h"
 
-const int ENEMY_FRAMES = 5;
 const float ENEMY_GRAVITY_SPEED = 0.8;
 const float ENEMY_MAX_GRAVITY_SPEED = 10;
 
@@ -21,14 +20,16 @@ public:
 	float getPosY() { return mPosY; };
 	int getWidth();
 	int getHeight();
+	void setEnemyFrames(int randomNum);
 	void move(Map& map_data);
 	void render(int mapX);
 	void setSpriteClips();
 private:
 	LTexture mEnemyTexture;
 	bool onGround;
+	int ENEMY_FRAMES;
 	float mPosX, mPosY, mVelX, mVelY;
 	int frame;
 	int mWidth, mHeight;
-	SDL_Rect mSpriteClipsEnemy[ENEMY_FRAMES];
+	SDL_Rect mSpriteClipsEnemy[100];
 };

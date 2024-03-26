@@ -49,7 +49,7 @@ void Map::loadMap(string path) {
 void Map::drawMap(int mapX) {
 	int type = 0;
 	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < 240; j++) {
+		for (int j = 0; j < 720; j++) {
 			type = map[i][j];
 			//cout << type << endl;
 			dest.x = j * 32;

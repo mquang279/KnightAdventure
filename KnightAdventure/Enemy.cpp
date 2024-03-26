@@ -5,15 +5,21 @@ Enemy::Enemy() {
 	onGround = false;
 	mPosX = 0;
 	mPosY = 0;
-	mVelX = 0;
+	mVelX = -2;
 	mVelY = 0;
 	frame = 0;
 	mWidth = 0;
 	mHeight = 0;
+	ENEMY_FRAMES = 0;
 }
 
 Enemy::~Enemy() {
 
+}
+
+void Enemy::setEnemyFrames(int randomNum) {
+	if (randomNum == 1) ENEMY_FRAMES = 5;
+	else if (randomNum == 2) ENEMY_FRAMES = 8;
 }
 
 bool Enemy::loadImage(string path) {
@@ -35,7 +41,11 @@ void Enemy::setSpriteClips() {
 }
 
 void Enemy::render(int mapX) {
-	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8]);
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if (mVelX > 0) {
+		flip = SDL_FLIP_HORIZONTAL;
+	}
+	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
 	frame++;
 	if (frame / 8 >= ENEMY_FRAMES) {
 		frame = 0;
@@ -43,7 +53,6 @@ void Enemy::render(int mapX) {
 }
 
 void Enemy::move(Map& map_data) {
-	mVelX = 0;
 	mVelY += ENEMY_GRAVITY_SPEED;
 	if (mVelY > ENEMY_MAX_GRAVITY_SPEED) {
 		mVelY = ENEMY_MAX_GRAVITY_SPEED;
@@ -55,7 +64,7 @@ void Enemy::move(Map& map_data) {
 	int y2 = 0;
 	int height_min = 0;
 
-	// Xu li va cham theo chieu doc
+	// Xu li va cham theo chieu ngang
 	if (mHeight < TILE_SIZE) {
 		height_min = mHeight;
 	}
@@ -73,24 +82,24 @@ void Enemy::move(Map& map_data) {
 			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE) {
 				mPosX = x2 * TILE_SIZE;
 				mPosX -= mWidth + 1;
-				mVelX = 0;
+				mVelX = -1 * mVelX;
 			}
 		}
 		//Nhan vat di chuyen sang trai
 		else if (mVelX < 0) {
 			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE) {
 				mPosX = (x1 + 1) * TILE_SIZE;
-				mVelX = 0;
+				mVelX = -1 * mVelX;
 			}
 		}
 	}
 
-	//Xu li va cham theo chieu ngang
+	//Xu li va cham theo chieu doc
 
-	int width_min = 0;
+	int width_min = TILE_SIZE;
 	if (mWidth < TILE_SIZE) width_min = mWidth;
 	else width_min = TILE_SIZE;
-	x1 = (mPosX) / TILE_SIZE;
+	x1 = (mPosX + 16) / TILE_SIZE;
 	x2 = (mPosX + width_min) / TILE_SIZE;
 	y1 = (mPosY + mVelY) / TILE_SIZE;
 	y2 = (mPosY + mVelY + mHeight - 1) / TILE_SIZE;
@@ -102,7 +111,7 @@ void Enemy::move(Map& map_data) {
 				mVelY = 0;
 				onGround = true;
 			}
-
+			else mVelX = -1 * mVelX;
 		}
 		else if (mVelY < 0) {
 			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y1][x2] != BLANK_TILE) {
@@ -111,14 +120,10 @@ void Enemy::move(Map& map_data) {
 			}
 		}
 	}
-	/*if (playerStatus == PLAYER_ATTACK && onGround) {
-		mVelX = 0;
-		mVelY = 0;
-	}*/
 	mPosX += mVelX;
 	mPosY += mVelY;
 	if (mPosX < 0) {
-		mPosX = 0;
+		mVelX = -1 * mVelX;
 	}
 	if ((mPosX + mWidth) > TOTAL_TILES_ROW * TILE_SIZE) {
 		mPosX = TOTAL_TILES_ROW * TILE_SIZE - mWidth - 1;

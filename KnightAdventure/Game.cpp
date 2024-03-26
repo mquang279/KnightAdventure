@@ -22,13 +22,20 @@ vector<Enemy*> Enemy_list;
 
 vector<Enemy*> createEnemyList() {
 	vector<Enemy*> list_enemy;
-	Enemy* enemy_obj = new Enemy[10];
-	for (int i = 0; i < 10; i++) {
+	Enemy* enemy_obj = new Enemy[20];
+	for (int i = 0; i < 20; i++) {
 		Enemy* p_enemy = enemy_obj + i;
 		if (p_enemy != NULL) {
-			p_enemy->loadImage("assets/enemy/dog/dog-run.png");
+			int randomNum = rand() % 2 + 1;
+			p_enemy->setEnemyFrames(randomNum);
+			if (randomNum == 1) {
+				p_enemy->loadImage("assets/enemy/dog/dog-run.png");
+			}
+			else if (randomNum == 2) {
+				p_enemy->loadImage("assets/enemy/burning-ghoul/burning-ghoul.png");
+			}
 			p_enemy->setSpriteClips();
-			p_enemy->setPosX(1280 + rand() % 300 + i * 800);
+			p_enemy->setPosX(rand() % 300 + i * 800);
 			p_enemy->setPosY(0);
 			list_enemy.push_back(p_enemy);
 		}
@@ -75,8 +82,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	playerObj.setSpriteClips();
 	map = new Map();
 	grass = new Map();
-	map->loadMap("assets/level/mapfinal.map");
-	grass->loadMap("assets/level/grassfinal.map");
+	map->loadMap("assets/level/level1_final_ground.map");
+	grass->loadMap("assets/level/level1_final_grass.map");
 	map->createTilesSprites();
 	grass->createTilesSprites();
 	BGClouds.loadBackground("assets/background/clouds2.png");
