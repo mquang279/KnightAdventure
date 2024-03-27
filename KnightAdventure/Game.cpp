@@ -35,7 +35,7 @@ vector<Enemy*> createEnemyList() {
 				p_enemy->loadImage("assets/enemy/burning-ghoul/burning-ghoul.png");
 			}
 			p_enemy->setSpriteClips();
-			p_enemy->setPosX(rand() % 300 + i * 800);
+			p_enemy->setPosX(1280 + rand() % 300 + i * 800);
 			p_enemy->setPosY(0);
 			list_enemy.push_back(p_enemy);
 		}

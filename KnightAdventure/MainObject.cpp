@@ -50,6 +50,10 @@ void MainObject::setSpriteClips() {
 }
 
 void MainObject::render() {
+	if (mPosY > 640) {
+		mPosX = 0;
+		mPosY = 0;
+	}
 	int currentFrame = ANIMATION_FRAMES;
 	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 10];
 	mFixX = 0;
@@ -80,7 +84,7 @@ void MainObject::render() {
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
 		mPlayerTexture.loadFromFile("assets/characters/attack.png");
 		currentFrame = ATTACK_FRAMES;
-		currentClip = &mSpriteClipsAttack[frame / 10];
+		currentClip = &mSpriteClipsAttack[frame / 8];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = -64;
 			mFixY = -16 + 10;
@@ -204,19 +208,20 @@ void MainObject::move(Map& map_data) {
 	int y2 = 0;
 	int height_min = 0;
 
-	// Xu li va cham theo chieu doc
-	if (mHeight < TILE_SIZE) {
-		height_min = mHeight;
+	// Xu li va cham theo chieu ngang
+	if (mHeight + mPlayerHitBoxW < TILE_SIZE) {
+		height_min = mHeight + mPlayerHitBoxW;
 	}
 	else height_min = TILE_SIZE;
 	x1 = (mPosX + mVelX) / TILE_SIZE;
 	x2 = (mPosX + mVelX + mWidth - 1) / TILE_SIZE;
 
-	y1 = (mPosY) / TILE_SIZE;
-	y2 = (mPosY + height_min - 1) / TILE_SIZE;
+	y1 = (mPosY + 16) / TILE_SIZE + 1;
+	y2 = (mPosY + 16 + height_min - 1) / TILE_SIZE + 1;
 	onGround = false;
 
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
+		//cout << y1 << " " << x2 << " va " << y2 << " " << x2 << endl;
 		//Nhan vat di chuyen sang phai
 		if (mVelX > 0) {
 			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE){
@@ -234,13 +239,13 @@ void MainObject::move(Map& map_data) {
 		}
 	}
 
-	//Xu li va cham theo chieu ngang
+	//Xu li va cham theo chieu doc
 
 	int width_min = 0;
 	if (mWidth < TILE_SIZE) width_min = mWidth;
 	else width_min = TILE_SIZE;
 	x1 = (mPosX) / TILE_SIZE;
-	x2 = (mPosX + width_min) / TILE_SIZE;
+	x2 = (mPosX + mWidth) / TILE_SIZE;
 	y1 = (mPosY + mVelY) / TILE_SIZE;
 	y2 = (mPosY + mVelY + mHeight - 1) / TILE_SIZE;
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {

@@ -23,6 +23,7 @@ public:
 	void setEnemyFrames(int randomNum);
 	void move(Map& map_data);
 	void render(int mapX);
+	void setEnemyHitBox(int randomNum);
 	void setSpriteClips();
 private:
 	LTexture mEnemyTexture;
@@ -31,5 +32,6 @@ private:
 	float mPosX, mPosY, mVelX, mVelY;
 	int frame;
 	int mWidth, mHeight;
+	SDL_Rect mEnemyHitBox;
 	SDL_Rect mSpriteClipsEnemy[100];
 };

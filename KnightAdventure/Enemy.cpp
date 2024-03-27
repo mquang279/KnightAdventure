@@ -72,8 +72,8 @@ void Enemy::move(Map& map_data) {
 	x1 = (mPosX + mVelX) / TILE_SIZE;
 	x2 = (mPosX + mVelX + mWidth - 1) / TILE_SIZE;
 
-	y1 = (mPosY) / TILE_SIZE;
-	y2 = (mPosY + height_min - 1) / TILE_SIZE;
+	y1 = (mPosY) / TILE_SIZE + 1;
+	y2 = (mPosY + height_min - 1) / TILE_SIZE + 1;
 	onGround = false;
 
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
@@ -96,10 +96,10 @@ void Enemy::move(Map& map_data) {
 
 	//Xu li va cham theo chieu doc
 
-	int width_min = TILE_SIZE;
+	int width_min = 0;
 	if (mWidth < TILE_SIZE) width_min = mWidth;
 	else width_min = TILE_SIZE;
-	x1 = (mPosX + 16) / TILE_SIZE;
+	x1 = (mPosX + width_min - 3) / TILE_SIZE;
 	x2 = (mPosX + width_min) / TILE_SIZE;
 	y1 = (mPosY + mVelY) / TILE_SIZE;
 	y2 = (mPosY + mVelY + mHeight - 1) / TILE_SIZE;
