@@ -33,6 +33,10 @@ public:
 	void centerEntityOnMap();
 	float getPosX();
 	float getPosY();
+	SDL_Rect getPlayerHitbox();
+	SDL_Rect getPlayerAttackHitbox();
+	int getPlayerStatus();
+	int getPlayerCurrentFrame();
 private:
 	int numberClips;
 	SDL_RendererFlip flip;
@@ -52,4 +56,5 @@ private:
 	LTexture mPlayerTexture;
 	int mapX;
 	bool onGround;
+	bool attackAnimationFinished;
 };

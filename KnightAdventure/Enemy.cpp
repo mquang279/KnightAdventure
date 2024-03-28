@@ -11,6 +11,9 @@ Enemy::Enemy() {
 	mWidth = 0;
 	mHeight = 0;
 	ENEMY_FRAMES = 0;
+	dieFinish = false;
+	dieFrame = 0;
+	flip = SDL_FLIP_NONE;
 }
 
 Enemy::~Enemy() {
@@ -18,8 +21,12 @@ Enemy::~Enemy() {
 }
 
 void Enemy::setEnemyFrames(int randomNum) {
-	if (randomNum == 1) ENEMY_FRAMES = 5;
-	else if (randomNum == 2) ENEMY_FRAMES = 8;
+	if (randomNum == 1) {
+		ENEMY_FRAMES = 5;
+	}
+	else if (randomNum == 2) {
+		ENEMY_FRAMES = 8;
+	}
 }
 
 bool Enemy::loadImage(string path) {
@@ -27,6 +34,17 @@ bool Enemy::loadImage(string path) {
 	if (success) {
 		mWidth = mEnemyTexture.getWidth() / ENEMY_FRAMES;
 		mHeight = mEnemyTexture.getHeight();
+		mEnemyHitBox.w = mWidth;
+		mEnemyHitBox.h = mHeight;
+	}
+	return success;
+}
+
+bool Enemy::loadDeathImage(string path) {
+	bool success = mEnemyDie.loadFromFile(path.c_str());
+	if (success) {
+		mDieWidth = mEnemyDie.getWidth() / ENEMY_DIE_FRAMES;
+		mDieHeight = mEnemyDie.getHeight();
 	}
 	return success;
 }
@@ -38,19 +56,44 @@ void Enemy::setSpriteClips() {
 		mSpriteClipsEnemy[i].w = mWidth;
 		mSpriteClipsEnemy[i].h = mHeight;
 	}
+	for (int i = 0; i < ENEMY_DIE_FRAMES; i++) {
+		mSpriteClipsEnemyDie[i].x = i * mDieWidth;
+		mSpriteClipsEnemyDie[i].y = 0;
+		mSpriteClipsEnemyDie[i].w = mDieWidth;
+		mSpriteClipsEnemyDie[i].h = mDieHeight;
+	}
 }
 
 void Enemy::render(int mapX) {
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	flip = SDL_FLIP_NONE;
 	if (mVelX > 0) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
+	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+	mEnemyHitBox.x = mPosX - mapX;
+	mEnemyHitBox.y = mPosY;
+	//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
 	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
 	frame++;
 	if (frame / 8 >= ENEMY_FRAMES) {
 		frame = 0;
 	}
 }
+
+void Enemy::renderDieFrame(int mapX) {
+	mVelX = 0;
+	mVelY = 0;
+	if (dieFinish == false) {
+		mEnemyDie.render(mPosX - mapX, mPosY, &mSpriteClipsEnemyDie[dieFrame / 6], NULL, NULL, flip);
+		dieFrame++;
+		if (dieFrame / 6 >= ENEMY_DIE_FRAMES) {
+			dieFinish = true;
+		}
+	}
+	
+	
+}
+
 
 void Enemy::move(Map& map_data) {
 	mVelY += ENEMY_GRAVITY_SPEED;
@@ -137,3 +180,8 @@ int Enemy::getWidth() {
 int Enemy::getHeight() {
 	return mHeight;
 }
+
+SDL_Rect Enemy::getEnemyHitbox() {
+	return mEnemyHitBox;
+}
+

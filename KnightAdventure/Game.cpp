@@ -19,6 +19,8 @@ SDL_Renderer* Game::gRenderer = nullptr;
 float scrollingOffset = 0;
 
 vector<Enemy*> Enemy_list;
+vector<bool> collisionStatus(20);
+
 
 vector<Enemy*> createEnemyList() {
 	vector<Enemy*> list_enemy;
@@ -30,9 +32,11 @@ vector<Enemy*> createEnemyList() {
 			p_enemy->setEnemyFrames(randomNum);
 			if (randomNum == 1) {
 				p_enemy->loadImage("assets/enemy/dog/dog-run.png");
+				p_enemy->loadDeathImage("assets/enemy/dog/dog-death.png");
 			}
 			else if (randomNum == 2) {
 				p_enemy->loadImage("assets/enemy/burning-ghoul/burning-ghoul.png");
+				p_enemy->loadDeathImage("assets/enemy/burning-ghoul/ghoul-death.png");
 			}
 			p_enemy->setSpriteClips();
 			p_enemy->setPosX(1280 + rand() % 300 + i * 800);
@@ -87,6 +91,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	map->createTilesSprites();
 	grass->createTilesSprites();
 	BGClouds.loadBackground("assets/background/clouds2.png");
+	for (int i = 0; i < 20; i++) {
+		collisionStatus[i] = false;
+	}
 }
 
 
@@ -122,7 +129,15 @@ void Game::render(){
 		Enemy* p_enemy = Enemy_list[i];
 		if (p_enemy != NULL) {
 			p_enemy->move(*map);
+		}
+		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerStatus() == 3 && playerObj.getPlayerCurrentFrame() == 0) {
+			collisionStatus[i] = true;
+		}
+		if (!collisionStatus[i]) {
 			p_enemy->render(playerObj.getMapX());
+		}
+		else if (collisionStatus[i] == true){
+			p_enemy->renderDieFrame(playerObj.getMapX());
 		}
 	}
 	playerObj.render();
@@ -139,4 +154,43 @@ void Game::close(){
 
 bool Game::running() {
 	return isRunning;
+}
+
+bool Game::checkCollision(SDL_Rect a, SDL_Rect b) {
+	int leftA, leftB;
+	int rightA, rightB;
+	int topA, topB;
+	int bottomA, bottomB;
+
+	leftA = a.x;
+	rightA = a.x + a.w;
+	topA = a.y;
+	bottomA = a.y + a.h;
+
+	leftB = b.x;
+	rightB = b.x + b.w;
+	topB = b.y;
+	bottomB = b.y + b.h;
+
+	if (bottomA <= topB)
+	{
+		return false;
+	}
+
+	if (topA >= bottomB)
+	{
+		return false;
+	}
+
+	if (rightA <= leftB)
+	{
+		return false;
+	}
+
+	if (leftA >= rightB)
+	{
+		return false;
+	}
+
+	return true;
 }

@@ -27,6 +27,7 @@ public:
 	void render();
 	void close();
 	bool running();
+	bool checkCollision(SDL_Rect a, SDL_Rect b);
 	static SDL_Renderer* gRenderer;
 private:
 	const int SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 640;
