@@ -32,38 +32,20 @@ bool MainObject::loadImage(string path) {
 	bool success = mPlayerTexture.loadFromFile(path.c_str());
 	if (success) {
 		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES;
-		mHeight = mPlayerTexture.getHeight();
+		mHeight = mPlayerTexture.getHeight() / TOTAL_ANIMATION;
 	}
 	return success;
 }
-
-bool MainObject::loadDeadImage(string path) {
-	bool success = mPlayerDead.loadFromFile(path.c_str());
-	if (success) {
-		mDeadWidth = mPlayerDead.getWidth() / DEAD_FRAMES;
-		mDeadHeight = mPlayerDead.getHeight();
-	}
-	return success;
-}
-
 
 void MainObject::setSpriteClips() {
 	if (mWidth > 0 && mHeight > 0) {
-		for (int i = 0; i < ANIMATION_FRAMES; i++) {
-			mSpriteClipsRun[i].x = i * 64;
-			mSpriteClipsRun[i].y = 0;
-			mSpriteClipsRun[i].w = mWidth;
-			mSpriteClipsRun[i].h = mHeight;
-
-			mSpriteClipsAttack[i].x = i * 144;
-			mSpriteClipsAttack[i].y = 0;
-			mSpriteClipsAttack[i].w = 144;
-			mSpriteClipsAttack[i].h = 128;
-
-			mSpriteClipsDead[i].x = i * mDeadWidth;
-			mSpriteClipsDead[i].y = 0;
-			mSpriteClipsDead[i].w = mDeadWidth;
-			mSpriteClipsDead[i].h = mDeadHeight;
+		for (int i = 0; i < TOTAL_ANIMATION; i++) {
+			for (int j = 0; j < ANIMATION_FRAMES; j++) {
+				mSpriteClips[i][j].x = j * 144;
+				mSpriteClips[i][j].y = i * 128;
+				mSpriteClips[i][j].w = mWidth;
+				mSpriteClips[i][j].h = mHeight;
+			}
 		}
 	}
 }
@@ -73,108 +55,92 @@ void MainObject::render() {
 		mPosX = 0;
 		mPosY = 0;
 	}
-	int currentFrame = ANIMATION_FRAMES;
-	SDL_Rect* currentClip = &mSpriteClipsRun[frame / 6];
-	mFixX = 0;
-	mFixY = 10;
-	mPlayerTexture.loadFromFile("assets/characters/running.png");
+	SDL_Rect* currentClip = &mSpriteClips[2][frame / 6];
 	attackAnimationFinished = false;
+	mFixY = 11;
+	mFixX = 0;
 	if (playerStatus == WALK_LEFT){
-		mPlayerTexture.loadFromFile("assets/characters/running.png");
 		flip = SDL_FLIP_HORIZONTAL;
-		currentFrame = ANIMATION_FRAMES;
-		currentClip = &mSpriteClipsRun[frame / 6];
-		mPlayerHitBoxX = 0;
-		mPlayerHitBoxY = 16;
-		mPlayerHitBoxW = -32;
-		mPlayerHitBoxH = -32;
+		currentClip = &mSpriteClips[2][frame / 6];
+		mPlayerHitBoxX = 48;
+		mPlayerHitBoxY = 32;
+		mPlayerHitBoxW = -112;
+		mPlayerHitBoxH = -64 + 12;
 	}
 	else if (playerStatus == WALK_RIGHT){
-		mPlayerTexture.loadFromFile("assets/characters/running.png");
 		flip = SDL_FLIP_NONE;
-		currentFrame = ANIMATION_FRAMES;
-		currentClip = &mSpriteClipsRun[frame / 6];
-		mFixX = 0;
-		mFixY = 10;
-		mPlayerHitBoxX = 32;
-		mPlayerHitBoxY = 16;
-		mPlayerHitBoxW = -32;
-		mPlayerHitBoxH = -32;
+		currentClip = &mSpriteClips[2][frame / 6];
+		mPlayerHitBoxX = 64;
+		mPlayerHitBoxY = 32;
+		mPlayerHitBoxW = -112;
+		mPlayerHitBoxH = -64 + 12;
 	}
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
-		mPlayerTexture.loadFromFile("assets/characters/attack.png");
-		currentFrame = ATTACK_FRAMES;
-		currentClip = &mSpriteClipsAttack[frame / 6];
+		currentClip = &mSpriteClips[0][frame / 6];
 		if (flip == SDL_FLIP_NONE) {
-			mFixX = -64;
-			mFixY = -16 + 10;
-
+			mFixX = -16;
 			mPlayerHitBoxX = 64;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64;
+			mPlayerHitBoxH = -64 + 12;
 
 			mAttackHitBoxX = 48;
 			mAttackHitBoxY = 0;
-			mAttackHitBoxW = -55;
+			mAttackHitBoxW = -65;
 			mAttackHitBoxH = -48;
 		}
 		else {
-			mFixX = -32;
-			mFixY = -16 + 10;
-
+			mFixX = +16;
 			mPlayerHitBoxX = 48;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64;
+			mPlayerHitBoxH = -64 + 12;
 
 			mAttackHitBoxX = 7;
 			mAttackHitBoxY = 0;
-			mAttackHitBoxW = -55;
+			mAttackHitBoxW = -65;
 			mAttackHitBoxH = -48;
 		}
 		attackAnimationTime++;
 	}
-	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK) {
-		mPlayerTexture.loadFromFile("assets/characters/idle.png");
-		currentFrame = IDLE_FRAMES;
-		currentClip = &mSpriteClipsRun[frame / 6];
+	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
+		currentClip = &mSpriteClips[1][frame / 6];
 		if (flip == SDL_FLIP_NONE) {
-			mPlayerHitBoxX = 0;
-			mPlayerHitBoxY = 16;
-			mPlayerHitBoxW = -32;
-			mPlayerHitBoxH = -32;
+			mPlayerHitBoxX = 32;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64 + 12;
 		}
 		else {
-			mPlayerHitBoxX = 32;
-			mPlayerHitBoxY = 16;
-			mPlayerHitBoxW = -32;
-			mPlayerHitBoxH = -32;
+			mPlayerHitBoxX = 80;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64 + 12;
 		}
 	}
-
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
-	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClipsAttack[0].w + mAttackHitBoxW, mSpriteClipsAttack[0].h + mAttackHitBoxH};
+	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClips[0][0].w + mAttackHitBoxW, mSpriteClips[0][0].h + mAttackHitBoxH };
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
+	//cout << hitBox2.x / 32 << endl;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
-	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
+	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
-	if (frame / 6 >= currentFrame) frame = 0;
+	if (frame / 6 >= ANIMATION_FRAMES) frame = 0;
 }
 
 void MainObject::renderDeadFrame() {
 	if (dieFinish == false) {
-		mPlayerDead.render(mPosX - mapX, mPosY + 21, &mSpriteClipsDead[dieFrame / 10], NULL, NULL, flip);
+		mPlayerTexture.render(mPosX - mapX, mPosY + 21, &mSpriteClips[3][dieFrame / 10], NULL, NULL, flip);
 		dieFrame++;
-		if (dieFrame / 10 >= DEAD_FRAMES) {
+		if (dieFrame / 10 >= ANIMATION_FRAMES) {
 			dieFinish = true;
 		}
 	}
 	else {
-		mPlayerDead.render(mPosX - mapX, mPosY + 21, &mSpriteClipsDead[DEAD_FRAMES - 1], NULL, NULL, flip);
+		mPlayerTexture.render(mPosX - mapX, mPosY + 21, &mSpriteClips[3][ANIMATION_FRAMES - 1], NULL, NULL, flip);
 	}
 }
 
@@ -208,9 +174,18 @@ void MainObject::handleInput(SDL_Event& e) {
 	}
 	else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
-		case SDLK_RIGHT: inputType.right_ = 0; break;
-		case SDLK_LEFT: inputType.left_ = 0; break;
-		case SDLK_UP: inputType.up_ = 0; break;
+		case SDLK_RIGHT: {
+			inputType.right_ = 0;
+		}
+		break;
+		case SDLK_LEFT: {
+			inputType.left_ = 0;
+		}
+		break;
+		case SDLK_UP: {
+			inputType.up_ = 0;
+		}
+		break;
 		case SDLK_SPACE:
 		{
 			playerStatus = PLAYER_IDLE;
@@ -249,17 +224,19 @@ void MainObject::move(Map& map_data) {
 	int height_min = 0;
 
 	// Xu li va cham theo chieu ngang
-	if (mHeight + mPlayerHitBoxW < TILE_SIZE) {
-		height_min = mHeight + mPlayerHitBoxW;
+	if (mHeight + mPlayerHitBoxH < TILE_SIZE) {
+		height_min = mHeight + mPlayerHitBoxH;
 	}
 	else height_min = TILE_SIZE;
-	x1 = (mPosX + mVelX) / TILE_SIZE;
-	x2 = (mPosX + mVelX + mWidth - 1) / TILE_SIZE;
-
+	x1 = (mPosX + mVelX + mPlayerHitBoxX + mFixX) / TILE_SIZE;
+	x2 = (mPosX + mVelX + mPlayerHitBoxX + mFixX + mWidth + mPlayerHitBoxW - 1) / TILE_SIZE;
 	//y1 va y2 la 2 o chua nhan vat
 
-	y1 = (mPosY + 16) / TILE_SIZE + 1;
-	y2 = (mPosY + 16 + height_min - 1) / TILE_SIZE + 1;
+	y1 = (mPosY + mPlayerHitBoxY) / TILE_SIZE + 1;
+	y2 = (mPosY + mPlayerHitBoxY + height_min - 1) / TILE_SIZE + 1;
+
+	cout << x1 << " " << x2 << " " << y1 << " " << y2 << endl;
+
 	onGround = false;
 
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
@@ -268,14 +245,14 @@ void MainObject::move(Map& map_data) {
 		if (mVelX > 0) {
 			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE){
 				mPosX = x2 * TILE_SIZE;
-				mPosX -= mWidth + 1;
+				mPosX -= (mPlayerHitBoxX + mWidth + mPlayerHitBoxW - 1 + mFixX);
 				mVelX = 0;
 			}
 		}
 		//Nhan vat di chuyen sang trai
 		else if (mVelX < 0) {
 			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE){
-				mPosX = (x1 + 1) * TILE_SIZE;
+				mPosX = (x1 + 1) * TILE_SIZE - (mPlayerHitBoxX + mFixX);
 				mVelX = 0;
 			}
 		}
@@ -284,17 +261,17 @@ void MainObject::move(Map& map_data) {
 	//Xu li va cham theo chieu doc
 
 	int width_min = 0;
-	if (mWidth < TILE_SIZE) width_min = mWidth;
+	if (mWidth + mPlayerHitBoxW < TILE_SIZE) width_min = mWidth + mPlayerHitBoxW;
 	else width_min = TILE_SIZE;
-	x1 = (mPosX) / TILE_SIZE;
-	x2 = (mPosX + mWidth) / TILE_SIZE;
-	y1 = (mPosY + mVelY) / TILE_SIZE;
-	y2 = (mPosY + mVelY + mHeight - 1) / TILE_SIZE;
+	x1 = (mPosX + mPlayerHitBoxX) / TILE_SIZE;
+	x2 = (mPosX + mPlayerHitBoxX + TILE_SIZE - 1) / TILE_SIZE;
+	y1 = (mPosY + mVelY + mPlayerHitBoxY) / TILE_SIZE;
+	y2 = (mPosY + mVelY + mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1 + mFixY) / TILE_SIZE;
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		if (mVelY > 0) {
 			if (map_data.map[y2][x1] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE) {
 				mPosY = y2 * TILE_SIZE;
-				mPosY -= (mHeight - 1);
+				mPosY -= (mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1 + mFixY);
 				mVelY = 0;
 				onGround = true;
 			}
@@ -313,14 +290,13 @@ void MainObject::move(Map& map_data) {
 	}
 	mPosX += mVelX;
 	mPosY += mVelY;
-	if (mPosX < 0) {
-		mPosX = 0;
+	if (mPosX + mPlayerHitBoxX + mFixX < 0) {
+		mPosX = -(mPlayerHitBoxX + mFixX);
 	}
-	if ((mPosX + mWidth) > TOTAL_TILES_ROW * TILE_SIZE) {
-		mPosX = TOTAL_TILES_ROW * TILE_SIZE - mWidth - 1;
+	if ((mPosX + mWidth + mPlayerHitBoxW + mPlayerHitBoxX + mFixX) > TOTAL_TILES_ROW * TILE_SIZE) {
+		mPosX = TOTAL_TILES_ROW * TILE_SIZE - (mWidth + mPlayerHitBoxW + mPlayerHitBoxX + mFixX + 1);
 	}
 	centerEntityOnMap();
-	
 }
 
 void MainObject::centerEntityOnMap() {
@@ -366,5 +342,6 @@ int MainObject::getPlayerCurrentFrame() {
 int MainObject::getAttackTime() {
 	return attackAnimationTime;
 }
+
 
 

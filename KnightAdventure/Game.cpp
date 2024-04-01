@@ -82,8 +82,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		}
 		isRunning = true;
 	}
-	playerObj.loadImage("assets/characters/running.png");
-	playerObj.loadDeadImage("assets/characters/dead.png");
+	playerObj.loadImage("assets/characters/playerAnimation.png");
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
@@ -126,7 +125,6 @@ void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 	BGSky.render(0, 0);
-	Health_Bar.render();
 	BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 	BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
@@ -166,6 +164,7 @@ void Game::render(){
 	else {
 		playerObj.renderDeadFrame();
 	}
+	Health_Bar.render();
 	SDL_RenderPresent(gRenderer);
 }
 
