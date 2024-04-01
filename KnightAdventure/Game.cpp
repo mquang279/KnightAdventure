@@ -4,12 +4,14 @@
 #include "MainObject.h"
 #include "Background.h"
 #include "Enemy.h"
+#include "HealthBar.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
 BGTexture BGSky;
 MainObject playerObj;
 BGTexture BGClouds;
+HealthBar Health_Bar;
 
 Map* map;
 Map* grass;
@@ -20,6 +22,9 @@ float scrollingOffset = 0;
 
 vector<Enemy*> Enemy_list;
 vector<bool> collisionStatus(20);
+vector<int> beingAttackedStatus(20);
+
+int playerHealth = 0;
 
 
 vector<Enemy*> createEnemyList() {
@@ -78,6 +83,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		isRunning = true;
 	}
 	playerObj.loadImage("assets/characters/running.png");
+	playerObj.loadDeadImage("assets/characters/dead.png");
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
@@ -90,6 +96,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	grass->loadMap("assets/level/level1_final_grass.map");
 	map->createTilesSprites();
 	grass->createTilesSprites();
+	Health_Bar.loadImage();
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	for (int i = 0; i < 20; i++) {
 		collisionStatus[i] = false;
@@ -119,10 +126,10 @@ void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 	BGSky.render(0, 0);
+	Health_Bar.render();
 	BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 	BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
-	playerObj.move(*map);
 	map->drawMap(playerObj.getMapX());
 	grass->drawMap(playerObj.getMapX());
 	for (int i = 0; i < Enemy_list.size(); i++) {
@@ -130,7 +137,9 @@ void Game::render(){
 		if (p_enemy != NULL) {
 			p_enemy->move(*map);
 		}
-		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerStatus() == 3 && playerObj.getPlayerCurrentFrame() == 0) {
+
+		//Player Attack Collision
+		if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
 			collisionStatus[i] = true;
 		}
 		if (!collisionStatus[i]) {
@@ -139,8 +148,24 @@ void Game::render(){
 		else if (collisionStatus[i] == true){
 			p_enemy->renderDieFrame(playerObj.getMapX());
 		}
+
+		//Enemy Attack Collision
+		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 50 == 0 && playerHealth != 8) {
+			playerHealth++;
+			Health_Bar.setSpriteFrame(playerHealth);
+		}
+		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i]) {
+			beingAttackedStatus[i]++;
+		}
 	}
-	playerObj.render();
+	
+	if (playerHealth < 8) {
+		playerObj.move(*map);
+		playerObj.render();
+	}
+	else {
+		playerObj.renderDeadFrame();
+	}
 	SDL_RenderPresent(gRenderer);
 }
 

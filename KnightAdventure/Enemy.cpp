@@ -84,14 +84,12 @@ void Enemy::renderDieFrame(int mapX) {
 	mVelX = 0;
 	mVelY = 0;
 	if (dieFinish == false) {
-		mEnemyDie.render(mPosX - mapX, mPosY, &mSpriteClipsEnemyDie[dieFrame / 6], NULL, NULL, flip);
+		mEnemyDie.render(mPosX - mapX, mPosY, &mSpriteClipsEnemyDie[dieFrame / 8], NULL, NULL, flip);
 		dieFrame++;
-		if (dieFrame / 6 >= ENEMY_DIE_FRAMES) {
+		if (dieFrame / 8 >= ENEMY_DIE_FRAMES) {
 			dieFinish = true;
 		}
 	}
-	
-	
 }
 
 

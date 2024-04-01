@@ -23,6 +23,9 @@ MainObject::MainObject() {
 	inputType.down_ = 0;
 	onGround = false;
 	attackAnimationFinished = false;
+	attackAnimationTime = 0;
+	dieFinish = false;
+	dieFrame = 0;
 }
 
 bool MainObject::loadImage(string path) {
@@ -33,6 +36,16 @@ bool MainObject::loadImage(string path) {
 	}
 	return success;
 }
+
+bool MainObject::loadDeadImage(string path) {
+	bool success = mPlayerDead.loadFromFile(path.c_str());
+	if (success) {
+		mDeadWidth = mPlayerDead.getWidth() / DEAD_FRAMES;
+		mDeadHeight = mPlayerDead.getHeight();
+	}
+	return success;
+}
+
 
 void MainObject::setSpriteClips() {
 	if (mWidth > 0 && mHeight > 0) {
@@ -46,6 +59,11 @@ void MainObject::setSpriteClips() {
 			mSpriteClipsAttack[i].y = 0;
 			mSpriteClipsAttack[i].w = 144;
 			mSpriteClipsAttack[i].h = 128;
+
+			mSpriteClipsDead[i].x = i * mDeadWidth;
+			mSpriteClipsDead[i].y = 0;
+			mSpriteClipsDead[i].w = mDeadWidth;
+			mSpriteClipsDead[i].h = mDeadHeight;
 		}
 	}
 }
@@ -115,6 +133,7 @@ void MainObject::render() {
 			mAttackHitBoxW = -55;
 			mAttackHitBoxH = -48;
 		}
+		attackAnimationTime++;
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK) {
 		mPlayerTexture.loadFromFile("assets/characters/idle.png");
@@ -133,6 +152,7 @@ void MainObject::render() {
 			mPlayerHitBoxH = -32;
 		}
 	}
+
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
 	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClipsAttack[0].w + mAttackHitBoxW, mSpriteClipsAttack[0].h + mAttackHitBoxH};
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
@@ -143,6 +163,19 @@ void MainObject::render() {
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 6 >= currentFrame) frame = 0;
+}
+
+void MainObject::renderDeadFrame() {
+	if (dieFinish == false) {
+		mPlayerDead.render(mPosX - mapX, mPosY + 21, &mSpriteClipsDead[dieFrame / 10], NULL, NULL, flip);
+		dieFrame++;
+		if (dieFrame / 10 >= DEAD_FRAMES) {
+			dieFinish = true;
+		}
+	}
+	else {
+		mPlayerDead.render(mPosX - mapX, mPosY + 21, &mSpriteClipsDead[DEAD_FRAMES - 1], NULL, NULL, flip);
+	}
 }
 
 void MainObject::handleInput(SDL_Event& e) {
@@ -178,7 +211,12 @@ void MainObject::handleInput(SDL_Event& e) {
 		case SDLK_RIGHT: inputType.right_ = 0; break;
 		case SDLK_LEFT: inputType.left_ = 0; break;
 		case SDLK_UP: inputType.up_ = 0; break;
-		case SDLK_SPACE: playerStatus = PLAYER_IDLE; break;
+		case SDLK_SPACE:
+		{
+			playerStatus = PLAYER_IDLE;
+			attackAnimationTime = 0;
+		}
+		break;
 		}
 	}
 
@@ -323,6 +361,10 @@ int MainObject::getPlayerStatus() {
 
 int MainObject::getPlayerCurrentFrame() {
 	return frame;
+}
+
+int MainObject::getAttackTime() {
+	return attackAnimationTime;
 }
 
 
