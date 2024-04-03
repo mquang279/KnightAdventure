@@ -57,23 +57,23 @@ void MainObject::render() {
 	}
 	SDL_Rect* currentClip = &mSpriteClips[2][frame / 8];
 	attackAnimationFinished = false;
-	mFixY = 11;
+	mFixY = 24;
 	mFixX = 0;
-	if (playerStatus == WALK_LEFT){
+	if (playerStatus == WALK_LEFT && inputType.left_ == 1){
 		flip = SDL_FLIP_HORIZONTAL;
 		currentClip = &mSpriteClips[2][frame / 8];
 		mPlayerHitBoxX = 48;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
-		mPlayerHitBoxH = -64 + 12;
+		mPlayerHitBoxH = -64;
 	}
-	else if (playerStatus == WALK_RIGHT){
+	else if (playerStatus == WALK_RIGHT && inputType.right_ == 1){
 		flip = SDL_FLIP_NONE;
 		currentClip = &mSpriteClips[2][frame / 8];
 		mPlayerHitBoxX = 64;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
-		mPlayerHitBoxH = -64 + 12;
+		mPlayerHitBoxH = -64;
 	}
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
 		currentClip = &mSpriteClips[0][frame / 8];
@@ -82,7 +82,7 @@ void MainObject::render() {
 			mPlayerHitBoxX = 64;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64 + 12;
+			mPlayerHitBoxH = -64;
 
 			mAttackHitBoxX = 48;
 			mAttackHitBoxY = 0;
@@ -94,7 +94,7 @@ void MainObject::render() {
 			mPlayerHitBoxX = 48;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64 + 12;
+			mPlayerHitBoxH = -64;
 
 			mAttackHitBoxX = 7;
 			mAttackHitBoxY = 0;
@@ -109,22 +109,22 @@ void MainObject::render() {
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64 + 12;
+			mPlayerHitBoxH = -64;
 		}
 		else {
 			mPlayerHitBoxX = 80;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
-			mPlayerHitBoxH = -64 + 12;
+			mPlayerHitBoxH = -64;
 		}
 	}
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
 	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClips[0][0].w + mAttackHitBoxW, mSpriteClips[0][0].h + mAttackHitBoxH };
-	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
+	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH };
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 8 >= ANIMATION_FRAMES) frame = 0;
@@ -132,14 +132,14 @@ void MainObject::render() {
 
 void MainObject::renderDeadFrame() {
 	if (dieFinish == false) {
-		mPlayerTexture.render(mPosX - mapX, mPosY + 21, &mSpriteClips[3][dieFrame / 10], NULL, NULL, flip);
+		mPlayerTexture.render(mPosX - mapX, mPosY + 54, &mSpriteClips[3][dieFrame / 10], NULL, NULL, flip);
 		dieFrame++;
 		if (dieFrame / 10 >= ANIMATION_FRAMES) {
 			dieFinish = true;
 		}
 	}
 	else {
-		mPlayerTexture.render(mPosX - mapX, mPosY + 21, &mSpriteClips[3][ANIMATION_FRAMES - 1], NULL, NULL, flip);
+		mPlayerTexture.render(mPosX - mapX, mPosY + 54, &mSpriteClips[3][ANIMATION_FRAMES - 1], NULL, NULL, flip);
 	}
 }
 
@@ -232,12 +232,11 @@ void MainObject::move(Map& map_data) {
 	//y1 va y2 la 2 o chua nhan vat
 
 	y1 = (mPosY + mPlayerHitBoxY) / TILE_SIZE + 1;
-	y2 = (mPosY + mPlayerHitBoxY + height_min - 1) / TILE_SIZE + 1;
-
+	y2 = (mPosY + mPlayerHitBoxY + mWidth + mPlayerHitBoxW - 1) / TILE_SIZE + 1;
+	
 	onGround = false;
 
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
-		//cout << y1 << " " << x2 << " va " << y2 << " " << x2 << endl;
 		//Nhan vat di chuyen sang phai
 		if (mVelX > 0) {
 			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE){
@@ -260,27 +259,29 @@ void MainObject::move(Map& map_data) {
 	int width_min = 0;
 	if (mWidth + mPlayerHitBoxW < TILE_SIZE) width_min = mWidth + mPlayerHitBoxW;
 	else width_min = TILE_SIZE;
-	x1 = (mPosX + mPlayerHitBoxX) / TILE_SIZE;
-	x2 = (mPosX + mPlayerHitBoxX + TILE_SIZE - 1) / TILE_SIZE;
-	y1 = (mPosY + mVelY + mPlayerHitBoxY) / TILE_SIZE;
-	y2 = (mPosY + mVelY + mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1 + mFixY) / TILE_SIZE;
+
+	x1 = (mPosX + mPlayerHitBoxX + mFixX) / TILE_SIZE;
+	x2 = (mPosX + mPlayerHitBoxX + mFixX + width_min - 3) / TILE_SIZE;
+	y1 = (mPosY + mVelY + mPlayerHitBoxY) / TILE_SIZE + 1;
+	y2 = (mPosY + mVelY + mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1) / TILE_SIZE + 1;
+	
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		if (mVelY > 0) {
 			if (map_data.map[y2][x1] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE) {
-				mPosY = y2 * TILE_SIZE;
-				mPosY -= (mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1 + mFixY);
+				mPosY = (y2 - 1) * TILE_SIZE;
+				mPosY -= (mPlayerHitBoxY + mHeight + mPlayerHitBoxH - 1);
 				mVelY = 0;
 				onGround = true;
 			}
-
-		}
+		} 
 		else if (mVelY < 0) {
 			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y1][x2] != BLANK_TILE) {
-				mPosY = (y1 + 1) * TILE_SIZE;
+				mPosY = (y1) * TILE_SIZE;
 				mVelY = 0;
 			}
 		}
 	}
+	//cout << onGround << endl;
 	if (playerStatus == PLAYER_ATTACK && onGround) {
 		mVelX = 0;
 		mVelY = 0;
