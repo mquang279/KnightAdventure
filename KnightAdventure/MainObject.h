@@ -29,14 +29,16 @@ public:
 	void setWidthHeight();
 	int getMapX();
 	void centerEntityOnMap();
-	float getPosX();
-	float getPosY();
+	int getPosX();
+	int getPosY();
 	SDL_Rect getPlayerHitbox();
 	SDL_Rect getPlayerAttackHitbox();
 	int getPlayerStatus();
 	int getPlayerCurrentFrame();
 	int getAttackTime();
 	void renderDeadFrame();
+	void setPosX(int x);
+	void setPosY(int y);
 private:
 	bool dieFinish;
 	int numberClips;

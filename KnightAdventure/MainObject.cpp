@@ -51,10 +51,6 @@ void MainObject::setSpriteClips() {
 }
 
 void MainObject::render() {
-	if (mPosY > 640) {
-		mPosX = 0;
-		mPosY = 0;
-	}
 	SDL_Rect* currentClip = &mSpriteClips[2][frame / 8];
 	attackAnimationFinished = false;
 	mFixY = 24;
@@ -124,7 +120,7 @@ void MainObject::render() {
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 8 >= ANIMATION_FRAMES) frame = 0;
@@ -313,12 +309,12 @@ int MainObject::getMapX() {
 	return mapX;
 }
 
-float MainObject::getPosX() {
-	return mPosX;
+int MainObject::getPosX() {
+	return (int)mPosX;
 }
 
-float MainObject::getPosY() {
-	return mPosY;
+int MainObject::getPosY() {
+	return (int)mPosY;
 }
 
 SDL_Rect MainObject::getPlayerHitbox() {
@@ -339,6 +335,14 @@ int MainObject::getPlayerCurrentFrame() {
 
 int MainObject::getAttackTime() {
 	return attackAnimationTime;
+}
+
+void MainObject::setPosX(int x) {
+	mPosX = x;
+}
+
+void MainObject::setPosY(int y) {
+	mPosY = y;
 }
 
 

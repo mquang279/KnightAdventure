@@ -5,6 +5,7 @@
 #include "Background.h"
 #include "Enemy.h"
 #include "HealthBar.h"
+#include "HitEffect.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -12,6 +13,7 @@ BGTexture BGSky;
 MainObject playerObj;
 BGTexture BGClouds;
 HealthBar Health_Bar;
+HitEffect PlayerHitEffect;
 
 Map* map;
 Map* grass;
@@ -87,6 +89,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
 	BGSky.loadBackground("assets/background/sky4.png");
+	PlayerHitEffect.loadFromFile("assets/hit_effect/type3.png");
 	Enemy_list = createEnemyList();
 	playerObj.setSpriteClips();
 	map = new Map();
@@ -130,6 +133,9 @@ void Game::render(){
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
 	map->drawMap(playerObj.getMapX());
 	grass->drawMap(playerObj.getMapX());
+
+	// Health Status
+
 	for (int i = 0; i < Enemy_list.size(); i++) {
 		Enemy* p_enemy = Enemy_list[i];
 		if (p_enemy != NULL) {
@@ -148,15 +154,30 @@ void Game::render(){
 		}
 
 		//Enemy Attack Collision
-		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 50 == 0 && playerHealth != 8) {
+
+		if ((checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8)) {
 			playerHealth++;
 			Health_Bar.setSpriteFrame(playerHealth);
+			PlayerHitEffect.render();
 		}
-		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i]) {
+		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8) {
 			beingAttackedStatus[i]++;
+			PlayerHitEffect.render();
 		}
 	}
-	
+
+	if (playerObj.getPosY() >= 1000) {
+		playerHealth++;
+		Health_Bar.setSpriteFrame(playerHealth);
+		playerObj.setPosX(0);
+		playerObj.setPosY(0);
+	}
+
+	if (playerObj.getPosY() >= 640) {
+		PlayerHitEffect.render();
+	}
+
+
 	if (playerHealth < 8) {
 		playerObj.move(*map);
 		playerObj.render();
@@ -165,6 +186,9 @@ void Game::render(){
 		playerObj.renderDeadFrame();
 	}
 	Health_Bar.render();
+
+	// Health Status End
+
 	SDL_RenderPresent(gRenderer);
 }
 
