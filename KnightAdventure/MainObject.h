@@ -9,11 +9,12 @@ const int TILE_SIZE = 32;
 const float GRAVITY_SPEED = 0.85;
 const float MAX_GRAVITY_SPEED = 10;
 const float JUMP_VAL = 16;
+const float POS_VEL = 4.5;
+
 
 class MainObject : public LTexture {
 public:
 	MainObject();
-	const static int POS_VEL = 5;
 	enum WalkType {
 		PLAYER_IDLE = 0,
 		WALK_RIGHT = 1,

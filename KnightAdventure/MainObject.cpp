@@ -55,13 +55,13 @@ void MainObject::render() {
 		mPosX = 0;
 		mPosY = 0;
 	}
-	SDL_Rect* currentClip = &mSpriteClips[2][frame / 6];
+	SDL_Rect* currentClip = &mSpriteClips[2][frame / 8];
 	attackAnimationFinished = false;
 	mFixY = 11;
 	mFixX = 0;
 	if (playerStatus == WALK_LEFT){
 		flip = SDL_FLIP_HORIZONTAL;
-		currentClip = &mSpriteClips[2][frame / 6];
+		currentClip = &mSpriteClips[2][frame / 8];
 		mPlayerHitBoxX = 48;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
@@ -69,14 +69,14 @@ void MainObject::render() {
 	}
 	else if (playerStatus == WALK_RIGHT){
 		flip = SDL_FLIP_NONE;
-		currentClip = &mSpriteClips[2][frame / 6];
+		currentClip = &mSpriteClips[2][frame / 8];
 		mPlayerHitBoxX = 64;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
 		mPlayerHitBoxH = -64 + 12;
 	}
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
-		currentClip = &mSpriteClips[0][frame / 6];
+		currentClip = &mSpriteClips[0][frame / 8];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = -16;
 			mPlayerHitBoxX = 64;
@@ -104,7 +104,7 @@ void MainObject::render() {
 		attackAnimationTime++;
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
-		currentClip = &mSpriteClips[1][frame / 6];
+		currentClip = &mSpriteClips[1][frame / 8];
 		if (flip == SDL_FLIP_NONE) {
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
@@ -123,12 +123,11 @@ void MainObject::render() {
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH};
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
-	//cout << hitBox2.x / 32 << endl;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
-	SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
+	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
-	if (frame / 6 >= ANIMATION_FRAMES) frame = 0;
+	if (frame / 8 >= ANIMATION_FRAMES) frame = 0;
 }
 
 void MainObject::renderDeadFrame() {
@@ -234,8 +233,6 @@ void MainObject::move(Map& map_data) {
 
 	y1 = (mPosY + mPlayerHitBoxY) / TILE_SIZE + 1;
 	y2 = (mPosY + mPlayerHitBoxY + height_min - 1) / TILE_SIZE + 1;
-
-	cout << x1 << " " << x2 << " " << y1 << " " << y2 << endl;
 
 	onGround = false;
 
