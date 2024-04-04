@@ -17,6 +17,7 @@ HitEffect PlayerHitEffect;
 
 Map* map;
 Map* grass;
+Map* trap;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
@@ -27,6 +28,8 @@ vector<bool> collisionStatus(20);
 vector<int> beingAttackedStatus(20);
 
 int playerHealth = 0;
+
+int x1, x2, y, trapCollisionTime = 0;
 
 
 vector<Enemy*> createEnemyList() {
@@ -46,7 +49,7 @@ vector<Enemy*> createEnemyList() {
 				p_enemy->loadDeathImage("assets/enemy/burning-ghoul/ghoul-death.png");
 			}
 			p_enemy->setSpriteClips();
-			p_enemy->setPosX(1280 + rand() % 300 + i * 800);
+			p_enemy->setPosX(1280 + rand() % 300 + i * 1000);
 			p_enemy->setPosY(0);
 			list_enemy.push_back(p_enemy);
 		}
@@ -85,19 +88,37 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		isRunning = true;
 	}
 	playerObj.loadImage("assets/characters/playerAnimation.png");
+
+	// Load Background Start
+	
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
 	BGSky.loadBackground("assets/background/sky4.png");
+	
+	//Load Background End
+
 	PlayerHitEffect.loadFromFile("assets/hit_effect/type3.png");
 	Enemy_list = createEnemyList();
 	playerObj.setSpriteClips();
+
+	// Load Map Start
+	
 	map = new Map();
 	grass = new Map();
+	trap = new Map();
+	trap->loadTileSet("assets/level/traptileset.png");
+	map->loadTileSet("assets/level/tileset2.png");
+	grass->loadTileSet("assets/level/tileset2.png");
 	map->loadMap("assets/level/level1_final_ground.map");
 	grass->loadMap("assets/level/level1_final_grass.map");
+	trap->loadMap("assets/level/level1_final_trap.map");
 	map->createTilesSprites();
 	grass->createTilesSprites();
+	trap->createTilesSprites();
+	
+	// Load Map End
+
 	Health_Bar.loadImage();
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	for (int i = 0; i < 20; i++) {
@@ -133,6 +154,7 @@ void Game::render(){
 	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
 	map->drawMap(playerObj.getMapX());
 	grass->drawMap(playerObj.getMapX());
+	trap->drawMap(playerObj.getMapX());
 
 	// Health Status
 
@@ -155,7 +177,7 @@ void Game::render(){
 
 		//Enemy Attack Collision
 
-		if ((checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8)) {
+		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8) {
 			playerHealth++;
 			Health_Bar.setSpriteFrame(playerHealth);
 			PlayerHitEffect.render();
@@ -176,18 +198,31 @@ void Game::render(){
 	if (playerObj.getPosY() >= 640) {
 		PlayerHitEffect.render();
 	}
-
-
 	if (playerHealth < 8) {
 		playerObj.move(*map);
 		playerObj.render();
 	}
 	else {
+		PlayerHitEffect.render();
 		playerObj.renderDeadFrame();
 	}
 	Health_Bar.render();
 
 	// Health Status End
+
+	// Trap Collision Start
+	x1 = playerObj.getPlayerHitbox().x + playerObj.getMapX();
+	x2 = playerObj.getPlayerHitbox().x + playerObj.getMapX() + playerObj.getPlayerHitbox().w;
+	y = playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h;
+	if ((trap->map[y / 32][x1 / 32] != 1 || trap->map[y / 32][x2 / 32] != 1)) {
+		if (trapCollisionTime % 100 == 0) {
+			playerHealth++;
+			Health_Bar.setSpriteFrame(playerHealth);
+		}
+		PlayerHitEffect.render();
+		trapCollisionTime++;
+	}
+	else trapCollisionTime = 0;
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -241,4 +276,15 @@ bool Game::checkCollision(SDL_Rect a, SDL_Rect b) {
 	}
 
 	return true;
+}
+
+bool trapCollision(SDL_Rect a, int mp[20][720], int trapTile) {
+	int x1, x2, y;
+	x1 = a.x;
+	x2 = a.x + a.w;
+	y = a.y + a.h;
+	if (mp[x1][y] == trapTile || mp[x2][y] == trapTile) {
+		return true;
+	}
+	return false;
 }

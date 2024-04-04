@@ -12,6 +12,7 @@ public:
 	Map();
 	~Map();
 	void loadMap(string path);
+	void loadTileSet(string path);
 	void drawMap(int mapX);
 	void createTilesSprites();
 	const int TILE_WIDTH = 32;
@@ -23,4 +24,5 @@ private:
 	SDL_Rect src, dest;
 	SDL_Rect gTileClip[1160];
 	LTexture mTileTexture;
+	int mWidth, mHeight;
 };

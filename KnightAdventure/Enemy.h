@@ -26,7 +26,6 @@ public:
 	void move(Map& map_data);
 	void render(int mapX);
 	void renderDieFrame(int mapX);
-	void setEnemyHitBox(int randomNum);
 	void setSpriteClips();
 	SDL_Rect getEnemyHitbox();
 private:

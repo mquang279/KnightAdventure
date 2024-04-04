@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdlib>
 
+
 using namespace std;
 
 typedef struct Input {
@@ -29,6 +30,7 @@ public:
 	void close();
 	bool running();
 	bool checkCollision(SDL_Rect a, SDL_Rect b);
+	bool trapCollision(SDL_Rect a, int mp[20][720], int trapTile);
 	static SDL_Renderer* gRenderer;
 private:
 	const int SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 640;

@@ -26,11 +26,6 @@ int main(int argc, char* argv[]) {
 		if (deltaTime > TARGET_DELTATIME) {
 			deltaTime = TARGET_DELTATIME;
 		}
-		/*frameTime = SDL_GetTicks() - frameStart;
-
-		if (frameDelay > frameTime) {
-			SDL_Delay(frameDelay - frameTime);
-		}*/
 	}
 	game->close();
 	return 0;

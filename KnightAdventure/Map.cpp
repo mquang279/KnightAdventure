@@ -7,10 +7,11 @@ Map::Map() {
 	src.w = dest.w = 0;
 	src.h = dest.h = 0;
 	dest.x = dest.y = 0;
+	mWidth = 0;
+	mHeight = 0;
 }
 
 void Map::createTilesSprites() {
-	mTileTexture.loadFromFile("assets/level/tileset2.png");
 	int xPos = 0, yPos = 0;
 	for (int i = 0; i < TOTAL_TILES_SPRITES; i++) {
 		gTileClip[i].x = xPos;
@@ -19,11 +20,17 @@ void Map::createTilesSprites() {
 		gTileClip[i].h = TILE_HEIGHT;
 		//cout << gTileClip[i].x << " " << gTileClip[i].y << " " << gTileClip[i].w << " " << gTileClip[i].h << endl;
 		xPos += 32;
-		if (xPos >= 58 * 32) {
+		if (xPos >= mWidth) {
 			xPos = 0;
 			yPos += 32;
 		}
 	}
+}
+
+void Map::loadTileSet(string path) {
+	mTileTexture.loadFromFile(path.c_str());
+	mWidth = mTileTexture.getWidth();
+	mHeight = mTileTexture.getHeight();
 }
 
 void Map::loadMap(string path) {
