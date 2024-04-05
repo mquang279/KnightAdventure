@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
@@ -24,15 +25,16 @@ public:
 	Game();
 	~Game();
 	void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
+	void loadMedia();
 	void handleEvent();
 	void update();
 	void render();
 	void close();
 	bool running();
 	bool checkCollision(SDL_Rect a, SDL_Rect b);
-	bool trapCollision(SDL_Rect a, int mp[20][720], int trapTile);
 	static SDL_Renderer* gRenderer;
 private:
+	SDL_Event e;
 	const int SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 640;
 	bool isRunning;
 	SDL_Window* gWindow;

@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
 
 	game = new Game();
 	game->init("Knight Adventure", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 640, false);
+	game->loadMedia();
 	while (game->running()) {
 		frameStart = SDL_GetTicks();
 

@@ -32,6 +32,17 @@ bool LTexture::loadFromFile(string path) {
 	return mTexture != NULL;
 }
 
+bool LTexture::loadFromRenderedText(string textureText, SDL_Color textColor)
+{
+	mFont = TTF_OpenFont("assets/font/ThaleahFat.ttf", 80);
+	SDL_Surface* textSurface = TTF_RenderText_Solid(mFont, textureText.c_str(), textColor);
+	mTexture = SDL_CreateTextureFromSurface(Game::gRenderer, textSurface);
+	mWidth = textSurface->w;
+	mHeight = textSurface->h;
+	SDL_FreeSurface(textSurface);
+	return mTexture != NULL;
+}
+
 void LTexture::setColor(Uint8 red, Uint8 green, Uint8 blue) {
 	SDL_SetTextureColorMod(mTexture, red, green, blue);
 }

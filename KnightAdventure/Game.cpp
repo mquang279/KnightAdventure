@@ -6,6 +6,9 @@
 #include "Enemy.h"
 #include "HealthBar.h"
 #include "HitEffect.h"
+#include "GameMenu.h"
+#include "HelpMenu.h"
+#include "GameOver.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -14,6 +17,10 @@ MainObject playerObj;
 BGTexture BGClouds;
 HealthBar Health_Bar;
 HitEffect PlayerHitEffect;
+
+GameMenu gameMenu;
+HelpMenu helpMenu;
+GameOver gameOver;
 
 Map* map;
 Map* grass;
@@ -85,17 +92,29 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
 			cout << "Renderer created!" << endl;
 		}
+		if (TTF_Init() == -1)
+		{
+			printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+		}
 		isRunning = true;
 	}
-	playerObj.loadImage("assets/characters/playerAnimation.png");
+}
 
+void Game::loadMedia() {
+	playerObj.loadImage("assets/characters/playerAnimation.png");
+	playerObj.setPosX(0);
+	playerObj.setPosY(0);
+	//Load Game State
+	gameMenu.loadMenu("assets/game_state/HomeMenu/home.png");
+	helpMenu.loadMenu("assets/game_state/HelpMenu/help.png", "assets/game_state/HelpMenu/animation.png");
+	gameOver.loadText();
 	// Load Background Start
-	
+
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
 	BGSky.loadBackground("assets/background/sky4.png");
-	
+
 	//Load Background End
 
 	PlayerHitEffect.loadFromFile("assets/hit_effect/type3.png");
@@ -103,7 +122,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	playerObj.setSpriteClips();
 
 	// Load Map Start
-	
+
 	map = new Map();
 	grass = new Map();
 	trap = new Map();
@@ -116,19 +135,22 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	map->createTilesSprites();
 	grass->createTilesSprites();
 	trap->createTilesSprites();
-	
+
 	// Load Map End
 
-	Health_Bar.loadImage();
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	for (int i = 0; i < 20; i++) {
 		collisionStatus[i] = false;
 	}
+
+	playerHealth = 0;
+	Health_Bar.loadImage();
+	Health_Bar.setSpriteFrame(playerHealth);
+
 }
 
 
 void Game::handleEvent(){
-	SDL_Event e;
 	SDL_PollEvent(&e);
 	switch (e.type) {
 		case SDL_QUIT:
@@ -148,82 +170,104 @@ void Game::update(){
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
-	BGSky.render(0, 0);
-	BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
-	BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
-	BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
-	map->drawMap(playerObj.getMapX());
-	grass->drawMap(playerObj.getMapX());
-	trap->drawMap(playerObj.getMapX());
+	if (gameMenu.getPlayState()) {
+		BGSky.render(0, 0);
+		BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+		BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
+		map->drawMap(playerObj.getMapX());
+		grass->drawMap(playerObj.getMapX());
+		trap->drawMap(playerObj.getMapX());
 
-	// Health Status
+		// Attack Collision Start
 
-	for (int i = 0; i < Enemy_list.size(); i++) {
-		Enemy* p_enemy = Enemy_list[i];
-		if (p_enemy != NULL) {
-			p_enemy->move(*map);
+		for (int i = 0; i < Enemy_list.size(); i++) {
+			Enemy* p_enemy = Enemy_list[i];
+			if (p_enemy != NULL) {
+				p_enemy->move(*map);
+			}
+
+			//Player Attack Collision
+			if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
+				collisionStatus[i] = true;
+			}
+			if (!collisionStatus[i]) {
+				p_enemy->render(playerObj.getMapX());
+			}
+			else if (collisionStatus[i] == true) {
+				p_enemy->renderDieFrame(playerObj.getMapX());
+			}
+
+			//Enemy Attack Collision
+
+			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8) {
+				playerHealth++;
+				Health_Bar.setSpriteFrame(playerHealth);
+				PlayerHitEffect.render();
+			}
+			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8) {
+				beingAttackedStatus[i]++;
+				PlayerHitEffect.render();
+			}
 		}
 
-		//Player Attack Collision
-		if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
-			collisionStatus[i] = true;
-		}
-		if (!collisionStatus[i]) {
-			p_enemy->render(playerObj.getMapX());
-		}
-		else if (collisionStatus[i] == true){
-			p_enemy->renderDieFrame(playerObj.getMapX());
-		}
+		// Attack Collision End
 
-		//Enemy Attack Collision
+		// Trap Collision Start
+		x1 = playerObj.getPlayerHitbox().x + playerObj.getMapX();
+		x2 = playerObj.getPlayerHitbox().x + playerObj.getMapX() + playerObj.getPlayerHitbox().w;
+		y = playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h;
+		if ((trap->map[y / 32][x1 / 32] != 1 || trap->map[y / 32][x2 / 32] != 1)) {
+			if (trapCollisionTime % 100 == 0) {
+				playerHealth++;
+				Health_Bar.setSpriteFrame(playerHealth);
+			}
+			PlayerHitEffect.render();
+			trapCollisionTime++;
+		}
+		else trapCollisionTime = 0;
 
-		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8) {
-			playerHealth++;
+		// Health Status Start
+
+		if (playerObj.getPosY() >= 1000) {
 			Health_Bar.setSpriteFrame(playerHealth);
+			playerObj.setPosX(0);
+			playerObj.setPosY(0);
+		}
+
+		if (playerObj.getPosY() == 800) {
+			playerHealth++;
+		}
+
+		if (playerObj.getPosY() >= 640) {
 			PlayerHitEffect.render();
 		}
-		if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8) {
-			beingAttackedStatus[i]++;
+		if (playerHealth < 8) {
+			playerObj.move(*map);
+			playerObj.render();
+		}
+		else {
+			gameOver.render(e);
 			PlayerHitEffect.render();
+			playerObj.renderDeadFrame();
+			if (gameOver.getHomeState()) {
+				gameMenu.setPlayState(false);
+				loadMedia();
+			}
+			else if (gameOver.getReplayState()) {
+				loadMedia();
+			}
+		}
+		Health_Bar.render();
+		// Health Status End
+	}
+	else if (gameMenu.getHelpState()) {
+		helpMenu.render(e);
+		if (helpMenu.getExitState()) {
+			gameMenu.setHelpState(false);
 		}
 	}
-
-	if (playerObj.getPosY() >= 1000) {
-		playerHealth++;
-		Health_Bar.setSpriteFrame(playerHealth);
-		playerObj.setPosX(0);
-		playerObj.setPosY(0);
-	}
-
-	if (playerObj.getPosY() >= 640) {
-		PlayerHitEffect.render();
-	}
-	if (playerHealth < 8) {
-		playerObj.move(*map);
-		playerObj.render();
-	}
-	else {
-		PlayerHitEffect.render();
-		playerObj.renderDeadFrame();
-	}
-	Health_Bar.render();
-
-	// Health Status End
-
-	// Trap Collision Start
-	x1 = playerObj.getPlayerHitbox().x + playerObj.getMapX();
-	x2 = playerObj.getPlayerHitbox().x + playerObj.getMapX() + playerObj.getPlayerHitbox().w;
-	y = playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h;
-	if ((trap->map[y / 32][x1 / 32] != 1 || trap->map[y / 32][x2 / 32] != 1)) {
-		if (trapCollisionTime % 100 == 0) {
-			playerHealth++;
-			Health_Bar.setSpriteFrame(playerHealth);
-		}
-		PlayerHitEffect.render();
-		trapCollisionTime++;
-	}
-	else trapCollisionTime = 0;
-
+	else gameMenu.render(e);
 	SDL_RenderPresent(gRenderer);
 }
 
@@ -233,6 +277,8 @@ void Game::close(){
 	gWindow = NULL;
 	gRenderer = NULL;
 	SDL_Quit();
+	TTF_Quit();
+	IMG_Quit();
 }
 
 bool Game::running() {

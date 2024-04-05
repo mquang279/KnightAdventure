@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>C:\Users\Minh Quang\Desktop\SDL2_image-devel-2.8.2-VC\SDL2_image-2.8.2\lib\x64;C:\Users\Minh Quang\Desktop\SDL2-devel-2.29.3-VC\SDL2-2.29.3\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\Minh Quang\Desktop\SDL2-devel-2.29.3-VC\SDL2-2.29.3\include;C:\Users\Minh Quang\Desktop\SDL2_image-devel-2.8.2-VC\SDL2_image-2.8.2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Minh Quang\Desktop\SDL2_ttf-devel-2.22.0-VC\SDL2_ttf-2.22.0\lib\x64;C:\Users\Minh Quang\Desktop\SDL2_image-devel-2.8.2-VC\SDL2_image-2.8.2\lib\x64;C:\Users\Minh Quang\Desktop\SDL2-devel-2.29.3-VC\SDL2-2.29.3\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Minh Quang\Desktop\SDL2_ttf-devel-2.22.0-VC\SDL2_ttf-2.22.0\include;C:\Users\Minh Quang\Desktop\SDL2-devel-2.29.3-VC\SDL2-2.29.3\include;C:\Users\Minh Quang\Desktop\SDL2_image-devel-2.8.2-VC\SDL2_image-2.8.2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,7 +114,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\Minh Quang\Desktop\SDL2-devel-2.29.3-VC\SDL2-2.29.3\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,7 +137,10 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameMenu.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="HealthBar.cpp" />
+    <ClCompile Include="HelpMenu.cpp" />
     <ClCompile Include="HitEffect.cpp" />
     <ClCompile Include="LTexture.cpp" />
     <ClCompile Include="main.cpp" />
@@ -148,7 +151,10 @@
     <ClInclude Include="Background.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameMenu.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="HealthBar.h" />
+    <ClInclude Include="HelpMenu.h" />
     <ClInclude Include="HitEffect.h" />
     <ClInclude Include="LTexture.h" />
     <ClInclude Include="MainObject.h" />
