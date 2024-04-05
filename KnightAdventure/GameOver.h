@@ -12,11 +12,15 @@ public:
 	bool getReplayState() { return replayState; };
 	bool getHomeState() { return homeState; };
 private:
-	SDL_Rect mReplayButton;
-	SDL_Rect mHomeButton;
+	LTexture mReplayButton;
+	LTexture mHomeButton;
+	SDL_Rect mButtonPos;
 	LTexture mReplayText;
 	LTexture mHomeText;
 	LTexture mGameOverText;
+	SDL_Rect spriteClips[2];
 	bool homeState;
 	bool replayState;
+	int mWidth, mHeight;
+	int posChange;
 };

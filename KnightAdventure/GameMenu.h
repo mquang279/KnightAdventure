@@ -26,5 +26,8 @@ private:
 	bool helpState;
 	bool aboutState;
 	int mWidth, mHeight;
-	SDL_Rect menuItem[menuItemNum];
+	LTexture menuItem[menuItemNum];
+	int posChange[menuItemNum];
+	SDL_Rect menuItemPos;
+	SDL_Rect spriteClips[2];
 };

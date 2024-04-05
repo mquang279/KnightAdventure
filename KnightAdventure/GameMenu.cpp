@@ -15,17 +15,19 @@ bool GameMenu::loadMenu(string path) {
 	}
 	else {
 		SDL_Color textColor = { 255, 255, 255 };
-		playText.loadFromRenderedText("PLAY", textColor);
-		helpText.loadFromRenderedText("HELP", textColor);
-		aboutText.loadFromRenderedText("ABOUT", textColor);
-		mWidth = menuTexture.getWidth();
-		mHeight = menuTexture.getHeight();
-		
+		playText.loadFromRenderedText("PLAY", textColor, 80);
+		helpText.loadFromRenderedText("HELP", textColor, 80);
+		aboutText.loadFromRenderedText("ABOUT", textColor, 80);
 		for (int i = 0; i < menuItemNum; i++) {
-			menuItem[i].x = 460;
-			menuItem[i].y = 260 + i * 100;
-			menuItem[i].w = 360;
-			menuItem[i].h = 64;
+			menuItem[i].loadFromFile("assets/game_state/button/buttonall.png");
+		}
+		mWidth = menuItem[0].getWidth() / 2;
+		mHeight = menuItem[0].getHeight();
+		for (int i = 0; i < 2; i++) {
+			spriteClips[i].x = i * mWidth;
+			spriteClips[i].y = 0;
+			spriteClips[i].w = mWidth;
+			spriteClips[i].h = mHeight;
 		}
 	}
 	return success;
@@ -41,8 +43,10 @@ void GameMenu::render(SDL_Event& e) {
 	aboutState = false;
 	for (int i = 0; i < menuItemNum; i++) {
 		//Hover Effect
-		if (checkMouseEvent(e, menuItem[i])) {
-			SDL_SetRenderDrawColor(Game::gRenderer, 0, 104, 56, 225);
+		menuItemPos = { 470, 280 + i * 100, 0, 0 };
+		if (checkMouseEvent(e, menuItemPos)) {
+			menuItem[i].render(menuItemPos.x, menuItemPos.y, &spriteClips[1]);
+			posChange[i] = 5;
 			if (e.type == SDL_MOUSEBUTTONDOWN) {
 				switch (i) {
 					case 0:
@@ -57,12 +61,14 @@ void GameMenu::render(SDL_Event& e) {
 				}
 			}
 		}
-		else SDL_SetRenderDrawColor(Game::gRenderer, 0, 104, 56, 150);
-		SDL_RenderFillRect(Game::gRenderer, &menuItem[i]);
+		else {
+			menuItem[i].render(menuItemPos.x, menuItemPos.y, &spriteClips[0]);
+			posChange[i] = 0;
+		}
 	}
-	playText.render((1280 - playText.getWidth()) / 2, 260 - 4);
-	helpText.render((1280 - helpText.getWidth()) / 2, 360 - 4);
-	aboutText.render((1280 - aboutText.getWidth()) / 2, 460 - 4);
+	playText.render((1280 - playText.getWidth()) / 2, 286 + posChange[0]);
+	helpText.render((1280 - helpText.getWidth()) / 2, 386 + posChange[1]);
+	aboutText.render((1280 - aboutText.getWidth()) / 2, 486 + posChange[2]);
 }
 
 bool GameMenu::checkMouseEvent(SDL_Event& e, SDL_Rect a) {
@@ -72,13 +78,13 @@ bool GameMenu::checkMouseEvent(SDL_Event& e, SDL_Rect a) {
 	if (x < a.x) {
 		inside = false;
 	}
-	else if (x > a.x + a.w) {
+	else if (x > a.x + mWidth) {
 		inside = false;
 	}
 	else if (y < a.y) {
 		inside = false;
 	}
-	else if (y > a.y + a.h) {
+	else if (y > a.y + mHeight) {
 		inside = false;
 	}
 	return inside;

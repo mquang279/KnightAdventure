@@ -92,6 +92,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
 			cout << "Renderer created!" << endl;
 		}
+		SDL_SetWindowIcon(gWindow, IMG_Load("assets/logo/logo.png"));
 		if (TTF_Init() == -1)
 		{
 			printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
@@ -101,9 +102,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 }
 
 void Game::loadMedia() {
+
+	//Load Player Object
 	playerObj.loadImage("assets/characters/playerAnimation.png");
 	playerObj.setPosX(0);
 	playerObj.setPosY(0);
+	playerObj.setDeadStatus(false);
 	//Load Game State
 	gameMenu.loadMenu("assets/game_state/HomeMenu/home.png");
 	helpMenu.loadMenu("assets/game_state/HelpMenu/help.png", "assets/game_state/HelpMenu/animation.png");
@@ -117,7 +121,7 @@ void Game::loadMedia() {
 
 	//Load Background End
 
-	PlayerHitEffect.loadFromFile("assets/hit_effect/type3.png");
+	PlayerHitEffect.loadFromFile("assets/hit_effect/blood.png");
 	Enemy_list = createEnemyList();
 	playerObj.setSpriteClips();
 
@@ -200,12 +204,12 @@ void Game::render(){
 
 			//Enemy Attack Collision
 
-			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8) {
+			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8 && !playerObj.getDeadStatus()) {
 				playerHealth++;
 				Health_Bar.setSpriteFrame(playerHealth);
 				PlayerHitEffect.render();
 			}
-			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8) {
+			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8 && !playerObj.getDeadStatus()) {
 				beingAttackedStatus[i]++;
 				PlayerHitEffect.render();
 			}
@@ -247,9 +251,9 @@ void Game::render(){
 			playerObj.render();
 		}
 		else {
-			gameOver.render(e);
 			PlayerHitEffect.render();
 			playerObj.renderDeadFrame();
+			gameOver.render(e);
 			if (gameOver.getHomeState()) {
 				gameMenu.setPlayState(false);
 				loadMedia();

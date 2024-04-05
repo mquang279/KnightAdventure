@@ -39,6 +39,8 @@ public:
 	void renderDeadFrame();
 	void setPosX(int x);
 	void setPosY(int y);
+	bool getDeadStatus();
+	void setDeadStatus(bool status);
 private:
 	bool dieFinish;
 	int numberClips;
@@ -62,4 +64,5 @@ private:
 	bool attackAnimationFinished;
 	int attackAnimationTime;
 	int dieFrame;
+	bool isDead;
 };

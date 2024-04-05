@@ -12,12 +12,15 @@ public:
 	bool getExitState();
 private:
 	bool exitState;
-	int mBackWidth, mBackHeight;
+	int textPosChange;
+	int mButtonWidth, mButtonHeight;
 	int frame;
 	int mWidth, mHeight;
-	SDL_Rect exitButton;
 	SDL_Rect mSpriteClips[3][8];
+	SDL_Rect exitButtonPos;
 	LTexture mHelpBackground;
 	LTexture mAnimation;
 	LTexture mHelpText;
+	LTexture exitButton;
+	SDL_Rect spriteClips[2];
 };

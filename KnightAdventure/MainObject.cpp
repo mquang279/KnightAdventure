@@ -26,6 +26,7 @@ MainObject::MainObject() {
 	attackAnimationTime = 0;
 	dieFinish = false;
 	dieFrame = 0;
+	isDead = false;
 }
 
 bool MainObject::loadImage(string path) {
@@ -132,6 +133,7 @@ void MainObject::renderDeadFrame() {
 		dieFrame++;
 		if (dieFrame / 10 >= ANIMATION_FRAMES) {
 			dieFinish = true;
+			isDead = true;
 		}
 	}
 	else {
@@ -345,5 +347,11 @@ void MainObject::setPosY(int y) {
 	mPosY = y;
 }
 
+bool MainObject::getDeadStatus() {
+	return isDead;
+}
 
+void MainObject::setDeadStatus(bool status) {
+	isDead = status;
+}
 
