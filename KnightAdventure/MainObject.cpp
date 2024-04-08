@@ -24,7 +24,6 @@ MainObject::MainObject() {
 	onGround = false;
 	attackAnimationFinished = false;
 	attackAnimationTime = 0;
-	dieFinish = false;
 	dieFrame = 0;
 	isDead = false;
 }
@@ -128,15 +127,15 @@ void MainObject::render() {
 }
 
 void MainObject::renderDeadFrame() {
-	if (dieFinish == false) {
+	if (isDead == false) {
 		mPlayerTexture.render(mPosX - mapX, mPosY + 54, &mSpriteClips[3][dieFrame / 10], NULL, NULL, flip);
 		dieFrame++;
 		if (dieFrame / 10 >= ANIMATION_FRAMES) {
-			dieFinish = true;
 			isDead = true;
 		}
 	}
 	else {
+		isDead = true;
 		mPlayerTexture.render(mPosX - mapX, mPosY + 54, &mSpriteClips[3][ANIMATION_FRAMES - 1], NULL, NULL, flip);
 	}
 }
@@ -351,7 +350,10 @@ bool MainObject::getDeadStatus() {
 	return isDead;
 }
 
-void MainObject::setDeadStatus(bool status) {
-	isDead = status;
+void MainObject::reload() {
+	dieFrame = 0;
+	isDead = false;
+	mPosX = 0;
+	mPosY = 0;
 }
 

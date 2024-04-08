@@ -102,12 +102,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 }
 
 void Game::loadMedia() {
-
 	//Load Player Object
 	playerObj.loadImage("assets/characters/playerAnimation.png");
-	playerObj.setPosX(0);
-	playerObj.setPosY(0);
-	playerObj.setDeadStatus(false);
+	playerObj.reload();
 	//Load Game State
 	gameMenu.loadMenu("assets/game_state/HomeMenu/home.png");
 	helpMenu.loadMenu("assets/game_state/HelpMenu/help.png", "assets/game_state/HelpMenu/animation.png");
@@ -253,13 +250,15 @@ void Game::render(){
 		else {
 			PlayerHitEffect.render();
 			playerObj.renderDeadFrame();
-			gameOver.render(e);
-			if (gameOver.getHomeState()) {
-				gameMenu.setPlayState(false);
-				loadMedia();
-			}
-			else if (gameOver.getReplayState()) {
-				loadMedia();
+			if (playerObj.getDeadStatus()) {
+				gameOver.render(e);
+				if (gameOver.getHomeState()) {
+					gameMenu.setPlayState(false);
+					loadMedia();
+				}
+				else if (gameOver.getReplayState()) {
+					loadMedia();
+				}
 			}
 		}
 		Health_Bar.render();

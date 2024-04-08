@@ -40,9 +40,8 @@ public:
 	void setPosX(int x);
 	void setPosY(int y);
 	bool getDeadStatus();
-	void setDeadStatus(bool status);
+	void reload();
 private:
-	bool dieFinish;
 	int numberClips;
 	SDL_RendererFlip flip;
 	float mVelX, mVelY;
