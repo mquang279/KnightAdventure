@@ -6,7 +6,7 @@ class GameOver {
 public:
 	GameOver();
 	~GameOver();
-	bool loadText();
+	void loadText();
 	void render(SDL_Event& e);
 	bool checkMouse(SDL_Event& e, SDL_Rect a);
 	bool getReplayState() { return replayState; };

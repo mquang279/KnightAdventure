@@ -41,6 +41,8 @@ public:
 	void setPosY(int y);
 	bool getDeadStatus();
 	void reload();
+	bool getOnGroundStatus();
+	void renderIdleFrame();
 private:
 	int numberClips;
 	SDL_RendererFlip flip;

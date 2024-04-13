@@ -18,8 +18,9 @@ bool GameMenu::loadMenu(string path) {
 		playText.loadFromRenderedText("PLAY", textColor, 80);
 		helpText.loadFromRenderedText("HELP", textColor, 80);
 		aboutText.loadFromRenderedText("ABOUT", textColor, 80);
+		mainText.loadFromRenderedText("KNIGHT ADVENTURE", { 50, 50, 58 }, 140);
 		for (int i = 0; i < menuItemNum; i++) {
-			menuItem[i].loadFromFile("assets/game_state/button/buttonall.png");
+			menuItem[i].loadFromFile("assets/game_state/button/button.png");
 		}
 		mWidth = menuItem[0].getWidth() / 2;
 		mHeight = menuItem[0].getHeight();
@@ -36,14 +37,12 @@ bool GameMenu::loadMenu(string path) {
 void GameMenu::render(SDL_Event& e) {
 	
 	menuTexture.render(0, 0);
-	SDL_SetRenderDrawColor(Game::gRenderer, 0, 104, 56, 200);
-	SDL_SetRenderDrawBlendMode(Game::gRenderer, SDL_BLENDMODE_BLEND);
 	playState = false;
 	helpState = false;
 	aboutState = false;
 	for (int i = 0; i < menuItemNum; i++) {
 		//Hover Effect
-		menuItemPos = { 470, 280 + i * 100, 0, 0 };
+		menuItemPos = { (1280 - mWidth) / 2, 280 + i * 100, 0, 0};
 		if (checkMouseEvent(e, menuItemPos)) {
 			menuItem[i].render(menuItemPos.x, menuItemPos.y, &spriteClips[1]);
 			posChange[i] = 5;
@@ -69,6 +68,7 @@ void GameMenu::render(SDL_Event& e) {
 	playText.render((1280 - playText.getWidth()) / 2, 286 + posChange[0]);
 	helpText.render((1280 - helpText.getWidth()) / 2, 386 + posChange[1]);
 	aboutText.render((1280 - aboutText.getWidth()) / 2, 486 + posChange[2]);
+	mainText.render((1280 - mainText.getWidth()) / 2, 90);
 }
 
 bool GameMenu::checkMouseEvent(SDL_Event& e, SDL_Rect a) {

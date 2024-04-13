@@ -46,7 +46,7 @@ bool HelpMenu::loadMenu(string path1, string path2) {
 void HelpMenu::render(SDL_Event& e) {
 	exitState = false;
 	mHelpBackground.render(0, 0);
-	mAnimation.render(135, 220, &mSpriteClips[1][frame / 9]);
+	mAnimation.render(145, 220, &mSpriteClips[1][frame / 9]);
 	mAnimation.render(560, 220, &mSpriteClips[0][frame / 9]);
 	mAnimation.render(985, 220, &mSpriteClips[2][frame / 9]);
 	SDL_SetRenderDrawBlendMode(Game::gRenderer, SDL_BLENDMODE_BLEND);

@@ -64,20 +64,25 @@ void Enemy::setSpriteClips() {
 	}
 }
 
-void Enemy::render(int mapX) {
+void Enemy::render(int mapX, bool pauseGame) {
 	flip = SDL_FLIP_NONE;
 	if (mVelX > 0) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
-	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	mEnemyHitBox.x = mPosX - mapX;
-	mEnemyHitBox.y = mPosY;
-	//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
-	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
-	frame++;
-	if (frame / 8 >= ENEMY_FRAMES) {
+	if (!pauseGame) {
+		SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+		mEnemyHitBox.x = mPosX - mapX;
+		mEnemyHitBox.y = mPosY;
+		//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
+		frame++;
+		if (frame / 8 >= ENEMY_FRAMES) {
+			frame = 0;
+		}
+	}
+	else {
 		frame = 0;
 	}
+	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
 }
 
 void Enemy::renderDieFrame(int mapX) {
@@ -93,7 +98,7 @@ void Enemy::renderDieFrame(int mapX) {
 }
 
 
-void Enemy::move(Map& map_data) {
+void Enemy::move(Map& map_data, Map& trap_map) {
 	mVelY += ENEMY_GRAVITY_SPEED;
 	if (mVelY > ENEMY_MAX_GRAVITY_SPEED) {
 		mVelY = ENEMY_MAX_GRAVITY_SPEED;
@@ -120,7 +125,7 @@ void Enemy::move(Map& map_data) {
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		//Nhan vat di chuyen sang phai
 		if (mVelX > 0) {
-			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE) {
+			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE || trap_map.map[y1][x2] != BLANK_TILE || trap_map.map[y2][x2] != BLANK_TILE) {
 				mPosX = x2 * TILE_SIZE;
 				mPosX -= mWidth + 1;
 				mVelX = -1 * mVelX;
@@ -128,7 +133,7 @@ void Enemy::move(Map& map_data) {
 		}
 		//Nhan vat di chuyen sang trai
 		else if (mVelX < 0) {
-			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE) {
+			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE || trap_map.map[y1][x1] != BLANK_TILE || trap_map.map[y2][x1] != BLANK_TILE) {
 				mPosX = (x1 + 1) * TILE_SIZE;
 				mVelX = -1 * mVelX;
 			}

@@ -22,6 +22,7 @@ private:
 	LTexture playText;
 	LTexture helpText;
 	LTexture aboutText;
+	LTexture mainText;
 	bool playState;
 	bool helpState;
 	bool aboutState;

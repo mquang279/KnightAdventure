@@ -1,43 +1,5 @@
 #include "Game.h"
-#include "LTexture.h"
-#include "Map.h"
-#include "MainObject.h"
-#include "Background.h"
-#include "Enemy.h"
-#include "HealthBar.h"
-#include "HitEffect.h"
-#include "GameMenu.h"
-#include "HelpMenu.h"
-#include "GameOver.h"
-
-BGTexture BGFarGround;
-BGTexture BGSea;
-BGTexture BGSky;
-MainObject playerObj;
-BGTexture BGClouds;
-HealthBar Health_Bar;
-HitEffect PlayerHitEffect;
-
-GameMenu gameMenu;
-HelpMenu helpMenu;
-GameOver gameOver;
-
-Map* map;
-Map* grass;
-Map* trap;
-
-SDL_Renderer* Game::gRenderer = nullptr;
-
-float scrollingOffset = 0;
-
-vector<Enemy*> Enemy_list;
-vector<bool> collisionStatus(20);
-vector<int> beingAttackedStatus(20);
-
-int playerHealth = 0;
-
-int x1, x2, y, trapCollisionTime = 0;
-
+#include "Variables.h"
 
 vector<Enemy*> createEnemyList() {
 	vector<Enemy*> list_enemy;
@@ -106,9 +68,10 @@ void Game::loadMedia() {
 	playerObj.loadImage("assets/characters/playerAnimation.png");
 	playerObj.reload();
 	//Load Game State
-	gameMenu.loadMenu("assets/game_state/HomeMenu/home.png");
-	helpMenu.loadMenu("assets/game_state/HelpMenu/help.png", "assets/game_state/HelpMenu/animation.png");
+	gameMenu.loadMenu("assets/game_state/HomeMenu/background.png");
+	helpMenu.loadMenu("assets/game_state/HelpMenu/help2.png", "assets/game_state/HelpMenu/animation.png");
 	gameOver.loadText();
+	pauseMenu.loadMenu();
 	// Load Background Start
 
 	BGClouds.loadBackground("assets/background/clouds2.png");
@@ -164,14 +127,16 @@ void Game::handleEvent(){
 }
 
 void Game::update(){
-	scrollingOffset -= 0.5;
-	if (scrollingOffset < -BGClouds.getBGWidth()) scrollingOffset = 0;
+	
 }
 
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
-	if (gameMenu.getPlayState()) {
+	if (gameMenu.getPlayState() && !pauseGame) {
+		playGame = true;
+		scrollingOffset -= 0.5;
+		if (scrollingOffset < -BGClouds.getBGWidth()) scrollingOffset = 0;
 		BGSky.render(0, 0);
 		BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
@@ -185,7 +150,7 @@ void Game::render(){
 		for (int i = 0; i < Enemy_list.size(); i++) {
 			Enemy* p_enemy = Enemy_list[i];
 			if (p_enemy != NULL) {
-				p_enemy->move(*map);
+				p_enemy->move(*map, *trap);
 			}
 
 			//Player Attack Collision
@@ -193,7 +158,7 @@ void Game::render(){
 				collisionStatus[i] = true;
 			}
 			if (!collisionStatus[i]) {
-				p_enemy->render(playerObj.getMapX());
+				p_enemy->render(playerObj.getMapX(), pauseGame);
 			}
 			else if (collisionStatus[i] == true) {
 				p_enemy->renderDieFrame(playerObj.getMapX());
@@ -264,13 +229,53 @@ void Game::render(){
 		Health_Bar.render();
 		// Health Status End
 	}
-	else if (gameMenu.getHelpState()) {
+	else if (gameMenu.getHelpState() && !pauseGame) {
 		helpMenu.render(e);
 		if (helpMenu.getExitState()) {
 			gameMenu.setHelpState(false);
 		}
+		playGame = false;
 	}
-	else gameMenu.render(e);
+	else if (!pauseGame) {
+		gameMenu.render(e);
+		playGame = false;
+	}
+	else if (pauseGame){
+		BGSky.render(0, 0);
+		BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
+		BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
+		map->drawMap(playerObj.getMapX());
+		grass->drawMap(playerObj.getMapX());
+		trap->drawMap(playerObj.getMapX());
+		for (int i = 0; i < Enemy_list.size(); i++) {
+			Enemy* p_enemy = Enemy_list[i];
+			if (!collisionStatus[i]) {
+				p_enemy->render(playerObj.getMapX(), pauseGame);
+			}
+		}
+		playerObj.renderIdleFrame();
+		Health_Bar.render();
+		pauseMenu.render(e);
+	}
+	if (pauseGame) {
+		if (pauseMenu.getContinueState()) {
+			pauseGame = false;
+			pauseCheck *= -1;
+		}
+		if (pauseMenu.getHomeState()) {
+			gameMenu.setPlayState(false);
+			loadMedia();
+			pauseGame = false;
+			pauseCheck *= -1;
+		}
+	}
+	if (e.key.keysym.sym == SDLK_ESCAPE && e.key.repeat == 0 && e.type == SDL_KEYDOWN && playGame && playerObj.getOnGroundStatus()) {
+		pauseCheck *= -1;
+		cout << "ESC" << " " << pauseCheck << endl;
+		if (pauseCheck == -1) pauseGame = true;
+		else pauseGame = false;
+	}
 	SDL_RenderPresent(gRenderer);
 }
 

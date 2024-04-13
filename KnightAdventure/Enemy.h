@@ -23,8 +23,8 @@ public:
 	int getWidth();
 	int getHeight();
 	void setEnemyFrames(int randomNum);
-	void move(Map& map_data);
-	void render(int mapX);
+	void move(Map& map_data, Map& trap_map);
+	void render(int mapX, bool pauseGame);
 	void renderDieFrame(int mapX);
 	void setSpriteClips();
 	SDL_Rect getEnemyHitbox();

@@ -140,6 +140,10 @@ void MainObject::renderDeadFrame() {
 	}
 }
 
+void MainObject::renderIdleFrame() {
+	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, &mSpriteClips[1][0], NULL, NULL, flip);
+}
+
 void MainObject::handleInput(SDL_Event& e) {
 	if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
 		switch (e.key.keysym.sym) {
@@ -190,7 +194,6 @@ void MainObject::handleInput(SDL_Event& e) {
 		break;
 		}
 	}
-
 }
 
 void MainObject::move(Map& map_data) {
@@ -278,7 +281,7 @@ void MainObject::move(Map& map_data) {
 			}
 		}
 	}
-	//cout << onGround << endl;
+
 	if (playerStatus == PLAYER_ATTACK && onGround) {
 		mVelX = 0;
 		mVelY = 0;
@@ -357,3 +360,6 @@ void MainObject::reload() {
 	mPosY = 0;
 }
 
+bool MainObject::getOnGroundStatus() {
+	return onGround;
+}

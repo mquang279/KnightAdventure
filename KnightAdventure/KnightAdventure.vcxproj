@@ -146,6 +146,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainObject.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Background.h" />
@@ -159,6 +160,8 @@
     <ClInclude Include="LTexture.h" />
     <ClInclude Include="MainObject.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

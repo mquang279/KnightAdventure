@@ -12,11 +12,13 @@ GameOver::~GameOver() {
 
 }
 
-bool GameOver::loadText() {
+void GameOver::loadText() {
 	SDL_Color textColor = { 255, 255, 255 };
-	bool success = mReplayText.loadFromRenderedText("REPLAY", textColor, 80) && mHomeText.loadFromRenderedText("HOME", textColor, 80) && mGameOverText.loadFromRenderedText("GAME OVER", {255, 0, 0}, 200);
-	mReplayButton.loadFromFile("assets/game_state/button/buttonall.png");
-	mHomeButton.loadFromFile("assets/game_state/button/buttonall.png");
+	mReplayText.loadFromRenderedText("PLAY AGAIN", textColor, 80);
+	mHomeText.loadFromRenderedText("HOME", textColor, 80);
+	mGameOverText.loadFromRenderedText("GAME OVER", { 255, 0, 0 }, 200);
+	mReplayButton.loadFromFile("assets/game_state/button/button.png");
+	mHomeButton.loadFromFile("assets/game_state/button/button.png");
 	mWidth = mReplayButton.getWidth() / 2;
 	mHeight = mReplayButton.getHeight();
 	for (int i = 0; i < 2; i++) {
@@ -25,13 +27,12 @@ bool GameOver::loadText() {
 		spriteClips[i].w = mWidth;
 		spriteClips[i].h = mHeight;
 	}
-	return success;
 }
 
 void GameOver::render(SDL_Event& e) {
 	homeState = false;
 	replayState = false;
-	mButtonPos = { 470, 300, 0, 0 };
+	mButtonPos = { (1280 - mWidth) / 2, 300, 0, 0};
 	if (checkMouse(e, mButtonPos)) {
 		mHomeButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[1]);
 		posChange = 5;
@@ -45,7 +46,7 @@ void GameOver::render(SDL_Event& e) {
 	}
 	mHomeText.render((1280 - mHomeText.getWidth()) / 2, 306 + posChange);
 
-	mButtonPos = { 470, 450, 0, 0 };
+	mButtonPos = { (1280 - mWidth) / 2, 450, 0, 0 };
 	if (checkMouse(e, mButtonPos)) {
 		mReplayButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[1]);
 		posChange = 5;
