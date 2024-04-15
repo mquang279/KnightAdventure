@@ -8,7 +8,12 @@ class GameMenu {
 public:
 	GameMenu();
 	~GameMenu() {};
-	bool loadMenu(string path);
+	enum buttonType {
+		PLAY_TEXT = 0,
+		HELP_TEXT = 1,
+		ABOUT_TEXT = 2
+	};
+	void loadMenu();
 	void render(SDL_Event& e);
 	bool checkMouseEvent(SDL_Event& e, SDL_Rect a);
 	bool getPlayState();
@@ -19,9 +24,7 @@ public:
 	void setAboutState(bool state);
 private:
 	LTexture menuTexture;
-	LTexture playText;
-	LTexture helpText;
-	LTexture aboutText;
+	LTexture text[menuItemNum];
 	LTexture mainText;
 	bool playState;
 	bool helpState;

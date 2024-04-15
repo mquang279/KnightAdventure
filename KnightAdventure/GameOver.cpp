@@ -13,12 +13,12 @@ GameOver::~GameOver() {
 }
 
 void GameOver::loadText() {
-	SDL_Color textColor = { 255, 255, 255 };
+	SDL_Color textColor = { 50, 50, 58 };
 	mReplayText.loadFromRenderedText("PLAY AGAIN", textColor, 80);
 	mHomeText.loadFromRenderedText("HOME", textColor, 80);
 	mGameOverText.loadFromRenderedText("GAME OVER", { 255, 0, 0 }, 200);
-	mReplayButton.loadFromFile("assets/game_state/button/button.png");
-	mHomeButton.loadFromFile("assets/game_state/button/button.png");
+	mReplayButton.loadFromFile("assets/game_state/button/newbutton.png");
+	mHomeButton.loadFromFile("assets/game_state/button/newbutton.png");
 	mWidth = mReplayButton.getWidth() / 2;
 	mHeight = mReplayButton.getHeight();
 	for (int i = 0; i < 2; i++) {
@@ -35,7 +35,7 @@ void GameOver::render(SDL_Event& e) {
 	mButtonPos = { (1280 - mWidth) / 2, 300, 0, 0};
 	if (checkMouse(e, mButtonPos)) {
 		mHomeButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[1]);
-		posChange = 5;
+		posChange = 10;
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			homeState = true;
 		}
@@ -44,12 +44,12 @@ void GameOver::render(SDL_Event& e) {
 		mHomeButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[0]);
 		posChange = 0;
 	}
-	mHomeText.render((1280 - mHomeText.getWidth()) / 2, 306 + posChange);
+	mHomeText.render((1280 - mHomeText.getWidth()) / 2, 298 + posChange);
 
 	mButtonPos = { (1280 - mWidth) / 2, 450, 0, 0 };
 	if (checkMouse(e, mButtonPos)) {
 		mReplayButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[1]);
-		posChange = 5;
+		posChange = 12;
 		if (e.type == SDL_MOUSEBUTTONDOWN) {
 			replayState = true;
 		}
@@ -58,8 +58,8 @@ void GameOver::render(SDL_Event& e) {
 		mReplayButton.render(mButtonPos.x, mButtonPos.y, &spriteClips[0]);
 		posChange = 0;
 	}
-	mReplayText.render((1280 - mReplayText.getWidth()) / 2, 456 + posChange);
-	mGameOverText.render((1280 - mGameOverText.getWidth()) / 2, 110);
+	mReplayText.render((1280 - mReplayText.getWidth()) / 2, 446 + posChange);
+	mGameOverText.render((1280 - mGameOverText.getWidth()) / 2, 75);
 }
 
 bool GameOver::checkMouse(SDL_Event& e, SDL_Rect a) {

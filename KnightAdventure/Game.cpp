@@ -67,50 +67,39 @@ void Game::loadMedia() {
 	//Load Player Object
 	playerObj.loadImage("assets/characters/playerAnimation.png");
 	playerObj.reload();
+	playerObj.setSpriteClips();
 	//Load Game State
-	gameMenu.loadMenu("assets/game_state/HomeMenu/background.png");
-	helpMenu.loadMenu("assets/game_state/HelpMenu/help2.png", "assets/game_state/HelpMenu/animation.png");
+	gameMenu.loadMenu();
+	helpMenu.loadMenu();
 	gameOver.loadText();
 	pauseMenu.loadMenu();
-	// Load Background Start
+	levelFinish.loadMenu();
+	levelSelect.loadMenu();
 
+	// Load Background Start
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
 	BGSea.loadBackground("assets/background/sea2.png");
 	BGSky.loadBackground("assets/background/sky4.png");
-
 	//Load Background End
 
-	PlayerHitEffect.loadFromFile("assets/hit_effect/blood.png");
+	//Enemy Load Start
 	Enemy_list = createEnemyList();
-	playerObj.setSpriteClips();
-
-	// Load Map Start
-
-	map = new Map();
-	grass = new Map();
-	trap = new Map();
-	trap->loadTileSet("assets/level/traptileset.png");
-	map->loadTileSet("assets/level/tileset2.png");
-	grass->loadTileSet("assets/level/tileset2.png");
-	map->loadMap("assets/level/level1_final_ground.map");
-	grass->loadMap("assets/level/level1_final_grass.map");
-	trap->loadMap("assets/level/level1_final_trap.map");
-	map->createTilesSprites();
-	grass->createTilesSprites();
-	trap->createTilesSprites();
-
-	// Load Map End
-
-	BGClouds.loadBackground("assets/background/clouds2.png");
 	for (int i = 0; i < 20; i++) {
 		collisionStatus[i] = false;
 	}
+	//Enemy Load End
 
+	// Load Level Start
+
+
+	// Load Level End
+
+	//Health Add
+	PlayerHitEffect.loadFromFile("assets/hit_effect/blood.png");
 	playerHealth = 0;
 	Health_Bar.loadImage();
 	Health_Bar.setSpriteFrame(playerHealth);
-
 }
 
 
@@ -133,7 +122,44 @@ void Game::update(){
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
-	if (gameMenu.getPlayState() && !pauseGame) {
+	//Home Render Start
+	if (homeScreen) {
+		gameMenu.render(e);
+		currentLevel = 0;
+	}
+	//Home Render End
+
+	//Select Level Menu Start
+	if (gameMenu.getPlayState()) {
+		if (!homeScreen) {
+			currentLevel = levelSelect.getSelectLevel(e);
+			if (currentLevel != 0) levelControl.loadLevel(currentLevel);
+		}
+		homeScreen = false;
+		levelSelect.render(e);
+		if (levelSelect.getBackState()) {
+			homeScreen = true;
+			levelSelect.setBackState(false);
+			gameMenu.setPlayState(false);
+		}
+	}
+	//Select Level Menu End
+
+	//Help Menu Start
+	if (gameMenu.getHelpState()) {
+		homeScreen = false;
+		helpMenu.render(e);
+		if (helpMenu.getExitState()) {
+			helpMenu.setExitState(false);
+			homeScreen = true;
+			gameMenu.setHelpState(false);
+		}
+	}
+	//Help Menu End
+
+	//In Game Start
+	if (currentLevel != 0 && !pauseGame) {
+		gameMenu.setPlayState(false);
 		playGame = true;
 		scrollingOffset -= 0.5;
 		if (scrollingOffset < -BGClouds.getBGWidth()) scrollingOffset = 0;
@@ -141,16 +167,14 @@ void Game::render(){
 		BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
-		map->drawMap(playerObj.getMapX());
-		grass->drawMap(playerObj.getMapX());
-		trap->drawMap(playerObj.getMapX());
+		levelControl.renderLevel(currentLevel, playerObj.getMapX());
 
 		// Attack Collision Start
 
 		for (int i = 0; i < Enemy_list.size(); i++) {
 			Enemy* p_enemy = Enemy_list[i];
 			if (p_enemy != NULL) {
-				p_enemy->move(*map, *trap);
+				p_enemy->move(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel));
 			}
 
 			//Player Attack Collision
@@ -183,7 +207,7 @@ void Game::render(){
 		x1 = playerObj.getPlayerHitbox().x + playerObj.getMapX();
 		x2 = playerObj.getPlayerHitbox().x + playerObj.getMapX() + playerObj.getPlayerHitbox().w;
 		y = playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h;
-		if ((trap->map[y / 32][x1 / 32] != 1 || trap->map[y / 32][x2 / 32] != 1)) {
+		if ((levelControl.getCurrentTrap(currentLevel)->map[y / 32][x1 / 32] != 1 || levelControl.getCurrentTrap(currentLevel)->map[y / 32][x2 / 32] != 1)) {
 			if (trapCollisionTime % 100 == 0) {
 				playerHealth++;
 				Health_Bar.setSpriteFrame(playerHealth);
@@ -205,49 +229,51 @@ void Game::render(){
 			playerHealth++;
 		}
 
+		//
+
 		if (playerObj.getPosY() >= 640) {
 			PlayerHitEffect.render();
 		}
-		if (playerHealth < 8) {
-			playerObj.move(*map);
+		if (playerHealth < 8 && !currentLevelFinish) {
+			playerObj.move(*levelControl.getCurrentGround(currentLevel));
 			playerObj.render();
 		}
-		else {
+		else if (!currentLevelFinish) {
 			PlayerHitEffect.render();
 			playerObj.renderDeadFrame();
 			if (playerObj.getDeadStatus()) {
 				gameOver.render(e);
 				if (gameOver.getHomeState()) {
 					gameMenu.setPlayState(false);
-					loadMedia();
+					homeScreen = true;
+					reload();
 				}
 				else if (gameOver.getReplayState()) {
-					loadMedia();
+					reload();
 				}
 			}
 		}
+		else {
+			playerObj.renderIdleFrame();
+		}
 		Health_Bar.render();
+		if (playerObj.getPosX() >= (TOTAL_TILES_ROW * 32 - 160)) {
+			currentLevelFinish = true;
+		}
+		if (currentLevelFinish) {
+			levelFinish.render(e);
+		}
 		// Health Status End
 	}
-	else if (gameMenu.getHelpState() && !pauseGame) {
-		helpMenu.render(e);
-		if (helpMenu.getExitState()) {
-			gameMenu.setHelpState(false);
-		}
-		playGame = false;
-	}
-	else if (!pauseGame) {
-		gameMenu.render(e);
-		playGame = false;
-	}
-	else if (pauseGame){
+	//In Game End
+
+	//Pause Game Start
+	if (pauseGame) {
 		BGSky.render(0, 0);
 		BGClouds.render(scrollingOffset, SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
-		map->drawMap(playerObj.getMapX());
-		grass->drawMap(playerObj.getMapX());
-		trap->drawMap(playerObj.getMapX());
+		levelControl.renderLevel(currentLevel, playerObj.getMapX());
 		for (int i = 0; i < Enemy_list.size(); i++) {
 			Enemy* p_enemy = Enemy_list[i];
 			if (!collisionStatus[i]) {
@@ -257,26 +283,49 @@ void Game::render(){
 		playerObj.renderIdleFrame();
 		Health_Bar.render();
 		pauseMenu.render(e);
-	}
-	if (pauseGame) {
 		if (pauseMenu.getContinueState()) {
 			pauseGame = false;
-			pauseCheck *= -1;
 		}
 		if (pauseMenu.getHomeState()) {
 			gameMenu.setPlayState(false);
-			loadMedia();
+			homeScreen = true;
+			//loadMedia();
+			reload();
 			pauseGame = false;
-			pauseCheck *= -1;
 		}
 	}
 	if (e.key.keysym.sym == SDLK_ESCAPE && e.key.repeat == 0 && e.type == SDL_KEYDOWN && playGame && playerObj.getOnGroundStatus()) {
-		pauseCheck *= -1;
-		cout << "ESC" << " " << pauseCheck << endl;
-		if (pauseCheck == -1) pauseGame = true;
-		else pauseGame = false;
+		pauseGame = !pauseGame;
 	}
+	//Pause Game End
+
+	//Level Finish Start
+	if (levelFinish.getHomeState()) {
+		homeScreen = true;
+		reload();
+		gameMenu.setPlayState(false);
+		levelFinish.setHomeState(false);
+		currentLevelFinish = false;
+	}
+	//Level Finish End
+
 	SDL_RenderPresent(gRenderer);
+}
+
+void Game::reload() {
+	//Player Reload
+	playerObj.reload();
+
+	//Health Reload
+	playerHealth = 0;
+	Health_Bar.setSpriteFrame(playerHealth);
+	Health_Bar.loadImage();
+
+	//Enemy Reload
+	Enemy_list = createEnemyList();
+	for (int i = 0; i < 20; i++) {
+		collisionStatus[i] = false;
+	}
 }
 
 void Game::close(){
@@ -342,3 +391,5 @@ bool trapCollision(SDL_Rect a, int mp[20][720], int trapTile) {
 	}
 	return false;
 }
+
+

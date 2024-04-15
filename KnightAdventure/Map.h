@@ -6,7 +6,6 @@ const int TOTAL_TILES_ROW = 720;
 const int TOTAL_TILES_COL = 20;
 const int BLANK_TILE = 1;
 
-
 class Map {
 public:
 	Map();

@@ -30,6 +30,7 @@ public:
 	void update();
 	void render();
 	void close();
+	void reload();
 	bool running();
 	bool checkCollision(SDL_Rect a, SDL_Rect b);
 	static SDL_Renderer* gRenderer;

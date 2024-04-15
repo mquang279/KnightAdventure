@@ -39,6 +39,7 @@ private:
 	int mWidth, mHeight;
 	int mDieWidth, mDieHeight;
 	bool dieFinish;
+	bool trapHit;
 	SDL_RendererFlip flip;
 	SDL_Rect mEnemyHitBox;
 	SDL_Rect mSpriteClipsEnemy[100];

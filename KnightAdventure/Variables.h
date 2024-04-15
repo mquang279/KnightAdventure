@@ -9,6 +9,9 @@
 #include "HelpMenu.h"
 #include "GameOver.h"
 #include "PauseMenu.h"
+#include "LevelFinish.h"
+#include "LevelControl.h"
+#include "LevelSelect.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -22,10 +25,9 @@ GameMenu gameMenu;
 HelpMenu helpMenu;
 GameOver gameOver;
 PauseMenu pauseMenu;
-
-Map* map;
-Map* grass;
-Map* trap;
+LevelFinish levelFinish;
+LevelControl levelControl;
+LevelSelect levelSelect;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
@@ -40,5 +42,7 @@ int playerHealth = 0;
 int x1, x2, y, trapCollisionTime = 0;
 
 bool pauseGame = false;
-int pauseCheck = 1;
 bool playGame = false;
+bool currentLevelFinish = false;
+bool homeScreen = true;
+int currentLevel = 0;

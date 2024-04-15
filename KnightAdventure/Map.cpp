@@ -36,7 +36,7 @@ void Map::loadTileSet(string path) {
 void Map::loadMap(string path) {
 	ifstream mp(path.c_str());
 	int x = 0, y = 0;
-	if (mp.fail()) cout << "failed";
+	if (mp.fail()) cout << "failed" << endl;
 	for (int i = 0; i < TOTAL_TILES; i++) {
 		int tileType = -1;
 		mp >> tileType;

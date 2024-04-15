@@ -6,10 +6,11 @@ class HelpMenu {
 public:
 	HelpMenu();
 	~HelpMenu();
-	bool loadMenu(string path1, string path2);
+	void loadMenu();
 	void render(SDL_Event& e);
 	bool checkMouse(SDL_Event& e, SDL_Rect a);
 	bool getExitState();
+	void setExitState(bool state);
 private:
 	bool exitState;
 	int textPosChange;
@@ -18,6 +19,9 @@ private:
 	int mWidth, mHeight;
 	SDL_Rect mSpriteClips[3][8];
 	SDL_Rect exitButtonPos;
+	LTexture moveText;
+	LTexture attackText;
+	LTexture jumpText;
 	LTexture mHelpBackground;
 	LTexture mAnimation;
 	LTexture mHelpText;

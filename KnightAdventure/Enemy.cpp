@@ -13,6 +13,7 @@ Enemy::Enemy() {
 	ENEMY_FRAMES = 0;
 	dieFinish = false;
 	dieFrame = 0;
+	trapHit = false;
 	flip = SDL_FLIP_NONE;
 }
 
@@ -65,24 +66,26 @@ void Enemy::setSpriteClips() {
 }
 
 void Enemy::render(int mapX, bool pauseGame) {
-	flip = SDL_FLIP_NONE;
-	if (mVelX > 0) {
-		flip = SDL_FLIP_HORIZONTAL;
-	}
-	if (!pauseGame) {
-		SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-		mEnemyHitBox.x = mPosX - mapX;
-		mEnemyHitBox.y = mPosY;
-		//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
-		frame++;
-		if (frame / 8 >= ENEMY_FRAMES) {
+	if (!trapHit) {
+		flip = SDL_FLIP_NONE;
+		if (mVelX > 0) {
+			flip = SDL_FLIP_HORIZONTAL;
+		}
+		if (!pauseGame) {
+			SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+			mEnemyHitBox.x = mPosX - mapX;
+			mEnemyHitBox.y = mPosY;
+			//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
+			frame++;
+			if (frame / 8 >= ENEMY_FRAMES) {
+				frame = 0;
+			}
+		}
+		else {
 			frame = 0;
 		}
+		mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
 	}
-	else {
-		frame = 0;
-	}
-	mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
 }
 
 void Enemy::renderDieFrame(int mapX) {
@@ -121,9 +124,12 @@ void Enemy::move(Map& map_data, Map& trap_map) {
 	y1 = (mPosY) / TILE_SIZE + 1;
 	y2 = (mPosY + height_min - 1) / TILE_SIZE + 1;
 	onGround = false;
-
+	
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		//Nhan vat di chuyen sang phai
+		if ((trap_map.map[y1][x2] != BLANK_TILE || trap_map.map[y2][x2] != BLANK_TILE) && (trap_map.map[y1][x1] != BLANK_TILE || trap_map.map[y2][x1] != BLANK_TILE) && !trapHit) {
+			trapHit = true;
+		}
 		if (mVelX > 0) {
 			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE || trap_map.map[y1][x2] != BLANK_TILE || trap_map.map[y2][x2] != BLANK_TILE) {
 				mPosX = x2 * TILE_SIZE;
