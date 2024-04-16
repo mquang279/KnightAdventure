@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Game.h"
 #include "LTexture.h"
 #include "string"

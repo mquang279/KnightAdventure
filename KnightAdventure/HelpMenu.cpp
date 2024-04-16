@@ -23,7 +23,7 @@ void HelpMenu::loadMenu() {
 	mButtonWidth = exitButton.getWidth() / 2;
 	mButtonHeight = exitButton.getHeight();
 	exitButtonPos = { (1280 - mButtonWidth) / 2,530, 0, 0 };
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	mHelpText.loadFromRenderedText("BACK", textColor, 80);
 	moveText.loadFromRenderedText("MOVE", textColor, 90);
 	attackText.loadFromRenderedText("ATTACK", textColor, 90);

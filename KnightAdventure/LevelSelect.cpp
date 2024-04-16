@@ -15,7 +15,7 @@ LevelSelect::~LevelSelect() {
 
 void LevelSelect::loadMenu() {
 	Background.loadFromFile("assets/game_state/LevelSelect/selectLevel.png");
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	mainText.loadFromRenderedText("SELECT LEVEL", textColor, 80);
 	for (int i = 0; i < TOTAL_LEVEL; i++) {
 		levelButton[i].loadFromFile("assets/game_state/LevelSelect/button.png");

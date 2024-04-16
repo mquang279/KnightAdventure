@@ -13,10 +13,10 @@ GameOver::~GameOver() {
 }
 
 void GameOver::loadText() {
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	mReplayText.loadFromRenderedText("PLAY AGAIN", textColor, 80);
 	mHomeText.loadFromRenderedText("HOME", textColor, 80);
-	mGameOverText.loadFromRenderedText("GAME OVER", { 255, 0, 0 }, 200);
+	mGameOverText.loadFromRenderedText("GAME OVER", { 205, 24, 24 }, 200);
 	mReplayButton.loadFromFile("assets/game_state/button/newbutton.png");
 	mHomeButton.loadFromFile("assets/game_state/button/newbutton.png");
 	mWidth = mReplayButton.getWidth() / 2;

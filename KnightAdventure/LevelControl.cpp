@@ -8,6 +8,9 @@ LevelControl::~LevelControl() {
 }
 
 void LevelControl::loadLevel(int level) {
+	SDL_Color textColor = { 7, 15, 43 };
+	headerTexture.loadFromFile("assets/level/header.png");
+	currentLevel.loadFromRenderedText("Level " + to_string(level), textColor, 50);
 	ground = new Map();
 	grass = new Map();
 	trap = new Map();
@@ -26,6 +29,8 @@ void LevelControl::renderLevel(int level, int mapX) {
 	trap->drawMap(mapX);
 	ground->drawMap(mapX);
 	grass->drawMap(mapX);
+	//headerTexture.render(1280 - headerTexture.getWidth() + 20, 0);
+	//currentLevel.render(1280 - currentLevel.getWidth() - 30, 16);
 }
 
 Map* LevelControl::getCurrentGround(int level) {

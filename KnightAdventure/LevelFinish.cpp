@@ -21,7 +21,7 @@ void LevelFinish::loadMenu() {
 	for (int i = 0; i < buttonNum; i++) {
 		buttonPos[i] = { (1280 - mWidth) / 2, 310 + i * 120, mWidth, mHeight };
 	}
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	text[NEXT_LEVEL_BUTTON].loadFromRenderedText("NEXT LEVEL", textColor, 80);
 	text[HOME_BUTTON].loadFromRenderedText("HOME", textColor, 80);
 	mainText.loadFromRenderedText("LEVEL FINISHED!!!", textColor, 140);
@@ -50,7 +50,6 @@ void LevelFinish::render(SDL_Event& e) {
 			posChange[i] = 0;
 		}
 	}
-
 	mainText.render((1280 - mainText.getWidth()) / 2, 90);
 	for (int i = 0; i < buttonNum; i++) {
 		text[i].render((1280 - text[i].getWidth()) / 2, 304 + i * 120 + posChange[i]);
@@ -85,4 +84,8 @@ bool LevelFinish::getHomeState() {
 
 void LevelFinish::setHomeState(bool status) {
 	state[HOME_BUTTON] = status;
+}
+
+void LevelFinish::setNextLevelState(bool status) {
+	state[NEXT_LEVEL_BUTTON] = status;
 }

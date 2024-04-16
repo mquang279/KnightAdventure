@@ -12,6 +12,7 @@
 #include "LevelFinish.h"
 #include "LevelControl.h"
 #include "LevelSelect.h"
+#include "AboutMenu.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -28,6 +29,7 @@ PauseMenu pauseMenu;
 LevelFinish levelFinish;
 LevelControl levelControl;
 LevelSelect levelSelect;
+AboutMenu aboutMenu;
 
 SDL_Renderer* Game::gRenderer = nullptr;
 
@@ -46,3 +48,4 @@ bool playGame = false;
 bool currentLevelFinish = false;
 bool homeScreen = true;
 int currentLevel = 0;
+

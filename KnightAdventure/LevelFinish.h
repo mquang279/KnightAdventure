@@ -1,11 +1,13 @@
+#pragma once
+
 #include "Game.h"
 #include "LTexture.h"
 
 class LevelFinish {
 public:
 	enum buttonType {
-		HOME_BUTTON = 0,
-		NEXT_LEVEL_BUTTON = 1,
+		NEXT_LEVEL_BUTTON = 0,
+		HOME_BUTTON = 1,
 	};
 	static const int buttonNum = 2;
 	LevelFinish();
@@ -16,6 +18,7 @@ public:
 	bool getHomeState();
 	bool getNextLevelState();
 	void setHomeState(bool status);
+	void setNextLevelState(bool status);
 private:
 	LTexture button[buttonNum];
 	LTexture text[buttonNum];

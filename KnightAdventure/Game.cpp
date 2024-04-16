@@ -75,7 +75,7 @@ void Game::loadMedia() {
 	pauseMenu.loadMenu();
 	levelFinish.loadMenu();
 	levelSelect.loadMenu();
-
+	aboutMenu.loadMenu();
 	// Load Background Start
 	BGClouds.loadBackground("assets/background/clouds2.png");
 	BGFarGround.loadBackground("assets/background/far-grounds2.png");
@@ -156,6 +156,22 @@ void Game::render(){
 		}
 	}
 	//Help Menu End
+
+	//About Menu Start
+
+	if (gameMenu.getAboutState()) {
+		if (!homeScreen) {
+			aboutMenu.handleEvent(e);
+		}
+		homeScreen = false;
+		if (aboutMenu.getBackState()) {
+			homeScreen = true;	
+			aboutMenu.setBackState(false);
+			gameMenu.setAboutState(false);
+		}
+		aboutMenu.render(e);
+	}
+	//About Menu End
 
 	//In Game Start
 	if (currentLevel != 0 && !pauseGame) {
@@ -307,15 +323,23 @@ void Game::render(){
 		levelFinish.setHomeState(false);
 		currentLevelFinish = false;
 	}
+	if (levelFinish.getNextLevelState() && currentLevel < 18) {
+		currentLevel++;
+		currentLevelFinish = false;
+		cout << currentLevel << endl;
+		levelControl.loadLevel(currentLevel);
+		levelFinish.setNextLevelState(false);
+		reload();
+	}
+	else if (levelFinish.getNextLevelState()) homeScreen = true;
+	//cout << currentLevel << endl;
 	//Level Finish End
-
 	SDL_RenderPresent(gRenderer);
 }
 
 void Game::reload() {
 	//Player Reload
 	playerObj.reload();
-
 	//Health Reload
 	playerHealth = 0;
 	Health_Bar.setSpriteFrame(playerHealth);

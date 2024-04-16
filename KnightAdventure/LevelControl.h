@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Game.h"
 #include "Map.h"
 #include <string>
@@ -17,5 +19,6 @@ private:
 	Map* ground;
 	Map* grass;
 	Map* trap;
-
+	LTexture headerTexture;
+	LTexture currentLevel;
 };

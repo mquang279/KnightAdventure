@@ -10,7 +10,7 @@ GameMenu::GameMenu() {
 
 void GameMenu::loadMenu() {
 	menuTexture.loadFromFile("assets/game_state/HomeMenu/background.png");
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	text[PLAY_TEXT].loadFromRenderedText("PLAY", textColor, 80);
 	text[HELP_TEXT].loadFromRenderedText("HELP", textColor, 80);
 	text[ABOUT_TEXT].loadFromRenderedText("ABOUT", textColor, 80);

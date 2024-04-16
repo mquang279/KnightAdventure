@@ -9,6 +9,7 @@ Map::Map() {
 	dest.x = dest.y = 0;
 	mWidth = 0;
 	mHeight = 0;
+
 }
 
 void Map::createTilesSprites() {

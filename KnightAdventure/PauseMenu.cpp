@@ -21,7 +21,7 @@ void PauseMenu::loadMenu() {
 	for (int i = 0; i < buttonNum; i++) {
 		buttonPos[i] = { (1280 - mWidth) / 2, 310 + i * 120, mWidth, mHeight };
 	}
-	SDL_Color textColor = { 50, 50, 58 };
+	SDL_Color textColor = { 7, 15, 43 };
 	text[CONTINUE_BUTTON].loadFromRenderedText("CONTINUE", textColor, 80);	
 	text[HOME_BUTTON].loadFromRenderedText("HOME", textColor, 80);
 	mainText.loadFromRenderedText("KNIGHT ADVENTURE", textColor, 140);
