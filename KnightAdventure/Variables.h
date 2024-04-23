@@ -13,6 +13,7 @@
 #include "LevelControl.h"
 #include "LevelSelect.h"
 #include "AboutMenu.h"
+#include "Potion.h"
 
 BGTexture BGFarGround;
 BGTexture BGSea;
@@ -36,7 +37,9 @@ SDL_Renderer* Game::gRenderer = nullptr;
 float scrollingOffset = 0;
 
 vector<Enemy*> Enemy_list;
+vector<Potion*> Potion_list;
 vector<bool> collisionStatus(20);
+vector<bool> potionCollistionStatus(10);
 vector<int> beingAttackedStatus(20);
 
 int playerHealth = 0;

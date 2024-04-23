@@ -8,10 +8,17 @@ const int ANIMATION_FRAMES = 8;
 const int TOTAL_ANIMATION = 4;
 const int TILE_SIZE = 32;
 const float GRAVITY_SPEED = 0.85;
-const float MAX_GRAVITY_SPEED = 10;
+const float MAX_GRAVITY_SPEED = 15;
 const float JUMP_VAL = 16;
 const float POS_VEL = 4.5;
 
+typedef struct Input {
+	int left_;
+	int right_;
+	int up_;
+	int down_;
+	int jump_;
+};
 
 class MainObject : public LTexture {
 public:

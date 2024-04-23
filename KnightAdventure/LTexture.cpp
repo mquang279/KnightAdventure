@@ -4,6 +4,7 @@
 LTexture::LTexture() {
 	mTexture = NULL;
 	mWidth = mHeight = 0;
+	mFont = NULL;
 }
 
 void LTexture::free() {

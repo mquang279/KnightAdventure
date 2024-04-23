@@ -151,6 +151,7 @@
     <ClCompile Include="MainObject.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
+    <ClCompile Include="Potion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutMenu.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="MainObject.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Potion.h" />
     <ClInclude Include="Variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -26,6 +26,19 @@ vector<Enemy*> createEnemyList() {
 	return list_enemy;
 }
 
+vector<Potion*> createPotionList() {
+	vector<Potion*> list_Potion;
+	Potion* potion_obj = new Potion[10];
+	for (int i = 0; i < 10; i++) {
+		Potion* p_potion = potion_obj + i;
+		if (p_potion != NULL) {
+			p_potion->loadPotion(3000 + rand() % 300 + i * 3000);
+			list_Potion.push_back(p_potion);
+		}
+	}
+	return list_Potion;
+}
+
 Game::Game() {
 	gWindow = NULL;
 	isRunning = true;
@@ -96,6 +109,7 @@ void Game::loadMedia() {
 	// Load Level End
 
 	//Health Add
+	Potion_list = createPotionList();
 	PlayerHitEffect.loadFromFile("assets/hit_effect/blood.png");
 	playerHealth = 0;
 	Health_Bar.loadImage();
@@ -133,7 +147,13 @@ void Game::render(){
 	if (gameMenu.getPlayState()) {
 		if (!homeScreen) {
 			currentLevel = levelSelect.getSelectLevel(e);
-			if (currentLevel != 0) levelControl.loadLevel(currentLevel);
+			if (currentLevel != 0) {
+				levelControl.loadLevel(currentLevel);
+				levelControl.setFrame(0);
+				for (int i = 0; i < Potion_list.size(); i++) {
+					Potion_list[i]->setPosY(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel) , playerObj.getMapX());
+				}
+			}
 		}
 		homeScreen = false;
 		levelSelect.render(e);
@@ -144,7 +164,7 @@ void Game::render(){
 		}
 	}
 	//Select Level Menu End
-
+	// 
 	//Help Menu Start
 	if (gameMenu.getHelpState()) {
 		homeScreen = false;
@@ -184,8 +204,20 @@ void Game::render(){
 		BGClouds.render(scrollingOffset + BGClouds.getBGWidth(), SCREEN_HEIGHT - BGClouds.getBGHeight() + 100);
 		BGFarGround.render(0, SCREEN_HEIGHT - BGFarGround.getBGHeight());
 		levelControl.renderLevel(currentLevel, playerObj.getMapX());
-
 		// Attack Collision Start
+		for (int i = 0; i < Potion_list.size(); i++) {
+			if (!potionCollistionStatus[i]) {
+				Potion_list[i]->render(playerObj.getMapX());
+			}
+			if (checkCollision(Potion_list[i]->getPotionHitbox(), playerObj.getPlayerHitbox()) && !potionCollistionStatus[i]) {
+				if (playerHealth != 0) {
+					playerHealth--;
+					Health_Bar.setSpriteFrame(playerHealth);
+					Health_Bar.render();
+				}
+				potionCollistionStatus[i] = true;
+			}
+		}
 
 		for (int i = 0; i < Enemy_list.size(); i++) {
 			Enemy* p_enemy = Enemy_list[i];
@@ -216,6 +248,8 @@ void Game::render(){
 				PlayerHitEffect.render();
 			}
 		}
+
+		
 
 		// Attack Collision End
 
@@ -280,6 +314,7 @@ void Game::render(){
 			levelFinish.render(e);
 		}
 		// Health Status End
+		levelControl.renderLoadScreen(currentLevel);
 	}
 	//In Game End
 
@@ -326,9 +361,9 @@ void Game::render(){
 	if (levelFinish.getNextLevelState() && currentLevel < 18) {
 		currentLevel++;
 		currentLevelFinish = false;
-		cout << currentLevel << endl;
 		levelControl.loadLevel(currentLevel);
 		levelFinish.setNextLevelState(false);
+		levelControl.setFrame(0);
 		reload();
 	}
 	else if (levelFinish.getNextLevelState()) homeScreen = true;
@@ -349,6 +384,11 @@ void Game::reload() {
 	Enemy_list = createEnemyList();
 	for (int i = 0; i < 20; i++) {
 		collisionStatus[i] = false;
+	}
+	Potion_list = createPotionList();
+	for (int i = 0; i < Potion_list.size(); i++) {
+		potionCollistionStatus[i] = false;
+		Potion_list[i]->setPosY(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel), playerObj.getMapX());
 	}
 }
 

@@ -8,9 +8,10 @@ LevelControl::~LevelControl() {
 }
 
 void LevelControl::loadLevel(int level) {
+	loadPicture.loadFromFile("assets/game_state/LoadLevel/levelshow.png");
 	SDL_Color textColor = { 7, 15, 43 };
 	headerTexture.loadFromFile("assets/level/header.png");
-	currentLevel.loadFromRenderedText("Level " + to_string(level), textColor, 50);
+	currentLevel.loadFromRenderedText("Level " + to_string(level), textColor, 160);
 	ground = new Map();
 	grass = new Map();
 	trap = new Map();
@@ -23,6 +24,13 @@ void LevelControl::loadLevel(int level) {
 	trap->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_trap.map");
 	ground->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_ground.map");
 	grass->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_grass.map");
+}
+
+void LevelControl::renderLoadScreen(int level) {
+	if (frame < 90) {
+		currentLevel.render((1280 - currentLevel.getWidth()) / 2, (640 - currentLevel.getHeight())/ 2);
+		frame++;
+	}
 }
 
 void LevelControl::renderLevel(int level, int mapX) {
@@ -41,4 +49,8 @@ Map* LevelControl::getCurrentGrass(int level){
 }
 Map* LevelControl::getCurrentTrap(int level){
 	return trap;
+}
+
+void LevelControl::setFrame(int x) {
+	frame = x;
 }
