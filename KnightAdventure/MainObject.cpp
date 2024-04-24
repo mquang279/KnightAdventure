@@ -51,13 +51,13 @@ void MainObject::setSpriteClips() {
 }
 
 void MainObject::render() {
-	SDL_Rect* currentClip = &mSpriteClips[2][frame / 8];
+	SDL_Rect* currentClip = &mSpriteClips[2][frame / 7];
 	attackAnimationFinished = false;
 	mFixY = 24;
 	mFixX = 0;
 	if (playerStatus == WALK_LEFT && inputType.left_ == 1){
 		flip = SDL_FLIP_HORIZONTAL;
-		currentClip = &mSpriteClips[2][frame / 8];
+		currentClip = &mSpriteClips[2][frame / 7];
 		mPlayerHitBoxX = 48;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
@@ -65,14 +65,14 @@ void MainObject::render() {
 	}
 	else if (playerStatus == WALK_RIGHT && inputType.right_ == 1){
 		flip = SDL_FLIP_NONE;
-		currentClip = &mSpriteClips[2][frame / 8];
+		currentClip = &mSpriteClips[2][frame / 7];
 		mPlayerHitBoxX = 64;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
 		mPlayerHitBoxH = -64;
 	}
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
-		currentClip = &mSpriteClips[0][frame / 8];
+		currentClip = &mSpriteClips[0][frame / 7];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = -16;
 			mPlayerHitBoxX = 64;
@@ -100,7 +100,7 @@ void MainObject::render() {
 		attackAnimationTime++;
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
-		currentClip = &mSpriteClips[1][frame / 8];
+		currentClip = &mSpriteClips[1][frame / 7];
 		if (flip == SDL_FLIP_NONE) {
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
@@ -123,7 +123,7 @@ void MainObject::render() {
 	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
-	if (frame / 8 >= ANIMATION_FRAMES) frame = 0;
+	if (frame / 7 >= ANIMATION_FRAMES) frame = 0;
 }
 
 void MainObject::renderDeadFrame() {

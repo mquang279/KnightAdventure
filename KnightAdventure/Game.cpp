@@ -32,7 +32,7 @@ vector<Potion*> createPotionList() {
 	for (int i = 0; i < 10; i++) {
 		Potion* p_potion = potion_obj + i;
 		if (p_potion != NULL) {
-			p_potion->loadPotion(3000 + rand() % 300 + i * 3000);
+			p_potion->loadPotion(4000 + rand() % 300 + i * 3200);
 			list_Potion.push_back(p_potion);
 		}
 	}
