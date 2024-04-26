@@ -101,6 +101,7 @@ void MainObject::render() {
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
 		currentClip = &mSpriteClips[1][frame / 7];
+		mFixX = 20;
 		if (flip == SDL_FLIP_NONE) {
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
@@ -120,7 +121,7 @@ void MainObject::render() {
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
 	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 7 >= ANIMATION_FRAMES) frame = 0;
