@@ -7,7 +7,7 @@ vector<Enemy*> createEnemyList() {
 	for (int i = 0; i < 20; i++) {
 		Enemy* p_enemy = enemy_obj + i;
 		if (p_enemy != NULL) {
-			int randomNum = rand() % 2 + 1;
+			int randomNum = rand() % 3 + 1;
 			p_enemy->setEnemyFrames(randomNum);
 			if (randomNum == 1) {
 				p_enemy->loadImage("assets/enemy/dog/dog-run.png");
@@ -16,6 +16,10 @@ vector<Enemy*> createEnemyList() {
 			else if (randomNum == 2) {
 				p_enemy->loadImage("assets/enemy/burning-ghoul/burning-ghoul.png");
 				p_enemy->loadDeathImage("assets/enemy/burning-ghoul/ghoul-death.png");
+			}
+			else if (randomNum == 3) {
+				p_enemy->loadImage("assets/enemy/ghost/ghost.png");
+				p_enemy->loadDeathImage("assets/enemy/ghost/ghost-death.png");
 			}
 			p_enemy->setSpriteClips();
 			p_enemy->setPosX(1280 + rand() % 300 + i * 1000);
@@ -32,7 +36,7 @@ vector<Potion*> createPotionList() {
 	for (int i = 0; i < 10; i++) {
 		Potion* p_potion = potion_obj + i;
 		if (p_potion != NULL) {
-			p_potion->loadPotion(4000 + rand() % 300 + i * 3200);
+			p_potion->loadPotion(6000 + rand() % 600 + i * 3200);
 			list_Potion.push_back(p_potion);
 		}
 	}
@@ -216,36 +220,38 @@ void Game::render(){
 					Health_Bar.render();
 				}
 				potionCollistionStatus[i] = true;
+				playerObj.setBuffFinish(false);
+			}
+			if (potionCollistionStatus[i] && !playerObj.getBuffFinish()) {
+				playerObj.renderBuffEffect();
 			}
 		}
-
 		for (int i = 0; i < Enemy_list.size(); i++) {
 			Enemy* p_enemy = Enemy_list[i];
-			if (p_enemy != NULL) {
+			if (p_enemy != NULL && !p_enemy->getTrapHit()) {
 				p_enemy->move(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel));
-			}
+				//Player Attack Collision
+				if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
+					collisionStatus[i] = true;
+				}
+				if (!collisionStatus[i]) {
+					p_enemy->render(playerObj.getMapX(), pauseGame);
+				}
+				else if (collisionStatus[i] == true) {
+					p_enemy->renderDieFrame(playerObj.getMapX());
+				}
 
-			//Player Attack Collision
-			if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
-				collisionStatus[i] = true;
-			}
-			if (!collisionStatus[i]) {
-				p_enemy->render(playerObj.getMapX(), pauseGame);
-			}
-			else if (collisionStatus[i] == true) {
-				p_enemy->renderDieFrame(playerObj.getMapX());
-			}
+				//Enemy Attack Collision
 
-			//Enemy Attack Collision
-
-			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8 && !playerObj.getDeadStatus()) {
-				playerHealth++;
-				Health_Bar.setSpriteFrame(playerHealth);
-				PlayerHitEffect.render();
-			}
-			if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8 && !playerObj.getDeadStatus()) {
-				beingAttackedStatus[i]++;
-				PlayerHitEffect.render();
+				if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8 && !playerObj.getDeadStatus()) {
+					playerHealth++;
+					Health_Bar.setSpriteFrame(playerHealth);
+					PlayerHitEffect.render();
+				}
+				if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && playerHealth < 8 && !playerObj.getDeadStatus()) {
+					beingAttackedStatus[i]++;
+					PlayerHitEffect.render();
+				}
 			}
 		}
 
@@ -269,13 +275,13 @@ void Game::render(){
 
 		// Health Status Start
 
-		if (playerObj.getPosY() >= 1000) {
+		if (playerObj.getPosY() >= 1400) {
 			Health_Bar.setSpriteFrame(playerHealth);
 			playerObj.setPosX(0);
 			playerObj.setPosY(0);
 		}
 
-		if (playerObj.getPosY() == 800) {
+		if (playerObj.getPosY() == 1200) {
 			playerHealth++;
 		}
 
@@ -345,7 +351,7 @@ void Game::render(){
 			pauseGame = false;
 		}
 	}
-	if (e.key.keysym.sym == SDLK_ESCAPE && e.key.repeat == 0 && e.type == SDL_KEYDOWN && playGame && playerObj.getOnGroundStatus()) {
+	if (!homeScreen && e.key.keysym.sym == SDLK_ESCAPE && e.key.repeat == 0 && e.type == SDL_KEYDOWN && playGame && playerObj.getOnGroundStatus()) {
 		pauseGame = !pauseGame;
 	}
 	//Pause Game End
@@ -379,7 +385,6 @@ void Game::reload() {
 	playerHealth = 0;
 	Health_Bar.setSpriteFrame(playerHealth);
 	Health_Bar.loadImage();
-
 	//Enemy Reload
 	Enemy_list = createEnemyList();
 	for (int i = 0; i < 20; i++) {
@@ -449,8 +454,8 @@ bool trapCollision(SDL_Rect a, int mp[20][720], int trapTile) {
 	int x1, x2, y;
 	x1 = a.x;
 	x2 = a.x + a.w;
-	y = a.y + a.h;
-	if (mp[x1][y] == trapTile || mp[x2][y] == trapTile) {
+	y = a.y + a.h - 3;
+	if (mp[x1 / 32][y / 32] == trapTile || mp[x2 / 32][y / 32] == trapTile) {
 		return true;
 	}
 	return false;

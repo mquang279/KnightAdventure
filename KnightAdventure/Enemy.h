@@ -6,7 +6,7 @@
 
 const float ENEMY_GRAVITY_SPEED = 0.8;
 const float ENEMY_MAX_GRAVITY_SPEED = 10;
-const int ENEMY_DIE_FRAMES = 7;
+
 
 class Enemy{
 public:
@@ -27,8 +27,10 @@ public:
 	void render(int mapX, bool pauseGame);
 	void renderDieFrame(int mapX);
 	void setSpriteClips();
+	bool getTrapHit();
 	SDL_Rect getEnemyHitbox();
 private:
+	int ENEMY_DIE_FRAMES;
 	LTexture mEnemyTexture;
 	LTexture mEnemyDie;
 	bool onGround;

@@ -27,7 +27,7 @@ void Potion::setPosY(Map& map_data, Map& trap_map, int mapX) {
 			mPosY = i * 32 - mHeight - 10;
 			break;
 		}
-		else mPosY = 900;
+		else mPosY = 2000;
 	}
 }
 

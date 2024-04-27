@@ -24,9 +24,15 @@ Enemy::~Enemy() {
 void Enemy::setEnemyFrames(int randomNum) {
 	if (randomNum == 1) {
 		ENEMY_FRAMES = 5;
+		ENEMY_DIE_FRAMES = 7;
 	}
 	else if (randomNum == 2) {
 		ENEMY_FRAMES = 8;
+		ENEMY_DIE_FRAMES = 7;
+	}
+	else if (randomNum == 3) {
+		ENEMY_FRAMES = 4;
+		ENEMY_DIE_FRAMES = 5;
 	}
 }
 
@@ -111,6 +117,7 @@ void Enemy::move(Map& map_data, Map& trap_map) {
 	int x2 = 0;
 	int y1 = 0;
 	int y2 = 0;
+	int y3 = 0;
 	int height_min = 0;
 
 	// Xu li va cham theo chieu ngang
@@ -123,15 +130,13 @@ void Enemy::move(Map& map_data, Map& trap_map) {
 
 	y1 = (mPosY) / TILE_SIZE + 1;
 	y2 = (mPosY + height_min - 1) / TILE_SIZE + 1;
+
+	y3 = (mPosY + mHeight - 3) / TILE_SIZE;
 	onGround = false;
-	
 	if (x1 >= 0 && x2 < TOTAL_TILES_ROW && y1 >= 0 && y2 < TOTAL_TILES_COL) {
 		//Nhan vat di chuyen sang phai
-		if ((trap_map.map[y1][x2] != BLANK_TILE || trap_map.map[y2][x2] != BLANK_TILE) && (trap_map.map[y1][x1] != BLANK_TILE || trap_map.map[y2][x1] != BLANK_TILE) && !trapHit) {
-			trapHit = true;
-		}
 		if (mVelX > 0) {
-			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE || trap_map.map[y1][x2] != BLANK_TILE || trap_map.map[y2][x2] != BLANK_TILE) {
+			if (map_data.map[y1][x2] != BLANK_TILE || map_data.map[y2][x2] != BLANK_TILE || trap_map.map[y3][x2] != BLANK_TILE) {
 				mPosX = x2 * TILE_SIZE;
 				mPosX -= mWidth + 1;
 				mVelX = -1 * mVelX;
@@ -139,15 +144,14 @@ void Enemy::move(Map& map_data, Map& trap_map) {
 		}
 		//Nhan vat di chuyen sang trai
 		else if (mVelX < 0) {
-			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE || trap_map.map[y1][x1] != BLANK_TILE || trap_map.map[y2][x1] != BLANK_TILE) {
+			if (map_data.map[y1][x1] != BLANK_TILE || map_data.map[y2][x1] != BLANK_TILE || trap_map.map[y3][x1] != BLANK_TILE) {
 				mPosX = (x1 + 1) * TILE_SIZE;
 				mVelX = -1 * mVelX;
 			}
 		}
 	}
-
 	//Xu li va cham theo chieu doc
-
+	
 	int width_min = 0;
 	if (mWidth < TILE_SIZE) width_min = mWidth;
 	else width_min = TILE_SIZE;
@@ -174,6 +178,11 @@ void Enemy::move(Map& map_data, Map& trap_map) {
 	}
 	mPosX += mVelX;
 	mPosY += mVelY;
+	x1 = mPosX / 32;
+	y1 = (mPosY + mHeight - 2) / 32;
+	if (trap_map.map[y1][x1] != BLANK_TILE && !trapHit) {
+		trapHit = true;
+	}
 	if (mPosX < 0) {
 		mVelX = -1 * mVelX;
 	}
@@ -194,3 +203,6 @@ SDL_Rect Enemy::getEnemyHitbox() {
 	return mEnemyHitBox;
 }
 
+bool Enemy::getTrapHit() {
+	return trapHit;
+}

@@ -26,13 +26,22 @@ MainObject::MainObject() {
 	attackAnimationTime = 0;
 	dieFrame = 0;
 	isDead = false;
+	buffFinish = false;
+	buffFrame = 0;
 }
 
 bool MainObject::loadImage(string path) {
 	bool success = mPlayerTexture.loadFromFile(path.c_str());
+	mBuffTexture.loadFromFile("assets/characters/buffeffect.png");
 	if (success) {
 		mWidth = mPlayerTexture.getWidth() / ANIMATION_FRAMES;
 		mHeight = mPlayerTexture.getHeight() / TOTAL_ANIMATION;
+	}
+	for (int i = 0; i < BUFF_FRAME; i++) {
+		mSpriteClipsBuff[i].x = i * (mBuffTexture.getWidth() / BUFF_FRAME);
+		mSpriteClipsBuff[i].y = 0;
+		mSpriteClipsBuff[i].w = mBuffTexture.getWidth() / BUFF_FRAME;
+		mSpriteClipsBuff[i].h = mBuffTexture.getHeight();
 	}
 	return success;
 }
@@ -80,9 +89,9 @@ void MainObject::render() {
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
 
-			mAttackHitBoxX = 48;
+			mAttackHitBoxX = 90;
 			mAttackHitBoxY = 0;
-			mAttackHitBoxW = -65;
+			mAttackHitBoxW = -110;
 			mAttackHitBoxH = -48;
 		}
 		else {
@@ -101,27 +110,31 @@ void MainObject::render() {
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
 		currentClip = &mSpriteClips[1][frame / 7];
-		mFixX = 20;
 		if (flip == SDL_FLIP_NONE) {
+			mFixX = 20;
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
 		}
 		else {
+			mFixX = -20;
 			mPlayerHitBoxX = 80;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
 		}
 	}
+	if (mVelY != 0) {
+		currentClip = &mSpriteClips[2][0];
+	}
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
 	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClips[0][0].w + mAttackHitBoxW, mSpriteClips[0][0].h + mAttackHitBoxH };
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH };
 	playerHitBox = hitBox2;
 	attackHitBox = hitBox1;
-	SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
+	//SDL_SetRenderDrawColor(Game::gRenderer, 255, 0, 0, 255);
+	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
 	if (frame / 7 >= ANIMATION_FRAMES) frame = 0;
@@ -165,6 +178,7 @@ void MainObject::handleInput(SDL_Event& e) {
 		case SDLK_UP:
 		{
 			inputType.up_ = 1;
+			playerStatus = PLAYER_JUMP;
 		}
 		break;
 		case SDLK_SPACE:
@@ -363,4 +377,23 @@ void MainObject::reload() {
 
 bool MainObject::getOnGroundStatus() {
 	return onGround;
+}
+
+void MainObject::renderBuffEffect() {
+	if (!buffFinish) {
+		mBuffTexture.render( mPosX - mapX + 25, mPosY + 30, &mSpriteClipsBuff[buffFrame / 12], NULL, NULL, flip);
+		buffFrame++;
+		if (buffFrame / 12 >= BUFF_FRAME) {
+			buffFinish = true;
+			buffFrame = 0;
+		}
+	}
+}
+
+bool MainObject::getBuffFinish() {
+	return buffFinish;
+}
+
+void MainObject::setBuffFinish(bool status) {
+	buffFinish = status;
 }

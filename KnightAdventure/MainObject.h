@@ -11,6 +11,7 @@ const float GRAVITY_SPEED = 0.85;
 const float MAX_GRAVITY_SPEED = 15;
 const float JUMP_VAL = 16;
 const float POS_VEL = 4.5;
+const int BUFF_FRAME = 16;
 
 typedef struct Input {
 	int left_;
@@ -28,6 +29,7 @@ public:
 		WALK_RIGHT = 1,
 		WALK_LEFT = 2,
 		PLAYER_ATTACK = 3,
+		PLAYER_JUMP = 4,
 	};
 	bool loadImage(string path);
 	void handleInput(SDL_Event& e);
@@ -35,6 +37,7 @@ public:
 	void render();
 	void setSpriteClips();
 	void setWidthHeight();
+	void renderBuffEffect();
 	int getMapX();
 	void centerEntityOnMap();
 	int getPosX();
@@ -51,6 +54,8 @@ public:
 	void reload();
 	bool getOnGroundStatus();
 	void renderIdleFrame();
+	bool getBuffFinish();
+	void setBuffFinish(bool status);
 private:
 	int numberClips;
 	SDL_RendererFlip flip;
@@ -62,16 +67,20 @@ private:
 	int mWidth, mHeight;
 	int mDeadWidth, mDeadHeight;
 	SDL_Rect mSpriteClips[TOTAL_ANIMATION][ANIMATION_FRAMES];
+	SDL_Rect mSpriteClipsBuff[BUFF_FRAME];
 	SDL_Rect playerHitBox;
 	SDL_Rect attackHitBox;
 	Input inputType;
 	int frame;
 	int playerStatus;
 	LTexture mPlayerTexture;
+	LTexture mBuffTexture;
 	int mapX;
 	bool onGround;
 	bool attackAnimationFinished;
 	int attackAnimationTime;
 	int dieFrame;
 	bool isDead;
+	bool buffFinish;
+	int buffFrame;
 };
