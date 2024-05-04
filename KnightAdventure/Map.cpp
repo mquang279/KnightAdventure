@@ -9,7 +9,10 @@ Map::Map() {
 	dest.x = dest.y = 0;
 	mWidth = 0;
 	mHeight = 0;
-
+	portalWidth = 0;
+	portalHeight = 0;
+	frame = 0;
+	yPortal = 0;
 }
 
 void Map::createTilesSprites() {
@@ -26,12 +29,22 @@ void Map::createTilesSprites() {
 			yPos += 32;
 		}
 	}
+	for (int i = 0; i < 6; i++) {
+		portalClips[i].x = i * portalWidth;
+		portalClips[i].y = 0;
+		portalClips[i].w = portalWidth;
+		portalClips[i].h = portalHeight;
+
+	}
 }
 
 void Map::loadTileSet(string path) {
 	mTileTexture.loadFromFile(path.c_str());
+	portalTexture.loadFromFile("assets/portal/portal.png");
 	mWidth = mTileTexture.getWidth();
 	mHeight = mTileTexture.getHeight();
+	portalWidth = portalTexture.getWidth() / 6;
+	portalHeight = portalTexture.getHeight();
 }
 
 void Map::loadMap(string path) {
@@ -65,5 +78,23 @@ void Map::drawMap(int mapX) {
 			//cout << dest.x << " " << dest.y << " " << map[i][j] << endl;
 			mTileTexture.render(dest.x - mapX, dest.y, &gTileClip[type]);
 		}
+	}
+
+}
+
+void Map::setPortalPosY() {
+	for (int i = 0; i < TOTAL_TILES_COL; i++) {
+		if (map[i][715] != 1) {
+			yPortal = i * 32;
+			break;
+		}
+	}
+}
+
+void Map::renderPortal(int mapX) {
+	portalTexture.render(TOTAL_TILES_ROW * 32 - 240 - mapX, yPortal - portalHeight, &portalClips[frame / 8]);
+	frame++;
+	if (frame / 8 >= 6) {
+		frame = 0;
 	}
 }

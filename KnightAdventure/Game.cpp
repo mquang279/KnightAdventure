@@ -36,7 +36,7 @@ vector<Potion*> createPotionList() {
 	for (int i = 0; i < 10; i++) {
 		Potion* p_potion = potion_obj + i;
 		if (p_potion != NULL) {
-			p_potion->loadPotion(6000 + rand() % 600 + i * 3200);
+			p_potion->loadPotion(6000 + rand() % 600 + i * 4500);
 			list_Potion.push_back(p_potion);
 		}
 	}
@@ -85,6 +85,7 @@ void Game::loadMedia() {
 	playerObj.loadImage("assets/characters/playerAnimation.png");
 	playerObj.reload();
 	playerObj.setSpriteClips();
+	playerObj.setPosX(720 * 32 - 360);
 	//Load Game State
 	gameMenu.loadMenu();
 	helpMenu.loadMenu();
@@ -290,11 +291,15 @@ void Game::render(){
 		if (playerObj.getPosY() >= 640) {
 			PlayerHitEffect.render();
 		}
-		if (playerHealth < 8 && !currentLevelFinish) {
+		if ((playerHealth < 8 && !currentLevelFinish)) {
 			playerObj.move(*levelControl.getCurrentGround(currentLevel));
 			playerObj.render();
 		}
-		else if (!currentLevelFinish) {
+		else if (!playerObj.getOnGroundStatus()) {
+			playerObj.move(*levelControl.getCurrentGround(currentLevel));
+			playerObj.render();
+		}
+		else if (!currentLevelFinish && playerObj.getOnGroundStatus()) {
 			PlayerHitEffect.render();
 			playerObj.renderDeadFrame();
 			if (playerObj.getDeadStatus()) {
@@ -313,7 +318,7 @@ void Game::render(){
 			playerObj.renderIdleFrame();
 		}
 		Health_Bar.render();
-		if (playerObj.getPosX() >= (TOTAL_TILES_ROW * 32 - 160)) {
+		if (playerObj.getPosX() >= (TOTAL_TILES_ROW * 32 - 170)) {
 			currentLevelFinish = true;
 		}
 		if (currentLevelFinish) {

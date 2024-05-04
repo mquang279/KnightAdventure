@@ -151,6 +151,7 @@
     <ClCompile Include="MainObject.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Potion.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="MainObject.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="PauseMenu.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="Potion.h" />
     <ClInclude Include="Variables.h" />
   </ItemGroup>

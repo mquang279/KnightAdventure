@@ -23,6 +23,7 @@ void LevelControl::loadLevel(int level) {
 	trap->createTilesSprites();
 	trap->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_trap.map");
 	ground->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_ground.map");
+	ground->setPortalPosY();
 	grass->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_grass.map");
 }
 
@@ -37,6 +38,8 @@ void LevelControl::renderLevel(int level, int mapX) {
 	trap->drawMap(mapX);
 	ground->drawMap(mapX);
 	grass->drawMap(mapX);
+	ground->renderPortal(mapX);
+
 	//headerTexture.render(1280 - headerTexture.getWidth() + 20, 0);
 	//currentLevel.render(1280 - currentLevel.getWidth() - 30, 16);
 }
