@@ -28,7 +28,7 @@ void GameMenu::loadMenu() {
 	}
 }
 
-void GameMenu::render(SDL_Event& e) {
+void GameMenu::render(SDL_Event& e, Mix_Chunk buttonSound) {
 	
 	menuTexture.render(0, 0);
 	playState = false;
@@ -41,6 +41,7 @@ void GameMenu::render(SDL_Event& e) {
 			menuItem[i].render(menuItemPos.x, menuItemPos.y, &spriteClips[1]);
 			text[i].render((1280 - text[i].getWidth()) / 2, 255 + i * 120 + 12);
 			if (e.type == SDL_MOUSEBUTTONDOWN) {
+				Mix_PlayChannel(-1, &buttonSound, 0);
 				switch (i) {
 					case 0:
 						playState = true;

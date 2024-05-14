@@ -34,17 +34,25 @@ void Map::createTilesSprites() {
 		portalClips[i].y = 0;
 		portalClips[i].w = portalWidth;
 		portalClips[i].h = portalHeight;
-
+	}
+	for (int i = 0; i < 13; i++) {
+		checkPointClips[i].x = i * checkPointWidth;
+		checkPointClips[i].y = 0;
+		checkPointClips[i].w = checkPointWidth;
+		checkPointClips[i].h = checkPointHeight;
 	}
 }
 
 void Map::loadTileSet(string path) {
 	mTileTexture.loadFromFile(path.c_str());
 	portalTexture.loadFromFile("assets/portal/portal.png");
+	checkPointTexture.loadFromFile("assets/checkpoint/checkpoint.png");
 	mWidth = mTileTexture.getWidth();
 	mHeight = mTileTexture.getHeight();
 	portalWidth = portalTexture.getWidth() / 6;
 	portalHeight = portalTexture.getHeight();
+	checkPointWidth = checkPointTexture.getWidth() / 13;
+	checkPointHeight = checkPointTexture.getHeight();
 }
 
 void Map::loadMap(string path) {
@@ -82,10 +90,22 @@ void Map::drawMap(int mapX) {
 
 }
 
-void Map::setPortalPosY() {
+void Map::setPosY() {
 	for (int i = 0; i < TOTAL_TILES_COL; i++) {
 		if (map[i][715] != 1) {
 			yPortal = i * 32;
+			break;
+		}
+	}
+	for (int i = 0; i < TOTAL_TILES_COL; i++) {
+		if (map[i][TOTAL_TILES_ROW / 3] != 1) {
+			checkPointY1 = i * 32;
+			break;
+		}
+	}
+	for (int i = 0; i < TOTAL_TILES_COL; i++) {
+		if (map[i][TOTAL_TILES_ROW * 2 / 3] != 1) {
+			checkPointY2 = i * 32;
 			break;
 		}
 	}
@@ -96,5 +116,11 @@ void Map::renderPortal(int mapX) {
 	frame++;
 	if (frame / 8 >= 6) {
 		frame = 0;
+	}
+	checkPointFrame++;
+	checkPointTexture.render(TOTAL_TILES_ROW * 32 / 3 - mapX, checkPointY1 - checkPointHeight + 6, &checkPointClips[checkPointFrame / 8]);
+	checkPointTexture.render(TOTAL_TILES_ROW * 32 * 2 / 3 - mapX, checkPointY2 - checkPointHeight + 6, &checkPointClips[checkPointFrame / 8]);
+	if (checkPointFrame / 8 >= 12) {
+		checkPointFrame = 0;
 	}
 }

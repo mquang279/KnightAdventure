@@ -15,7 +15,7 @@ public:
 		ABOUT_TEXT = 2
 	};
 	void loadMenu();
-	void render(SDL_Event& e);
+	void render(SDL_Event& e, Mix_Chunk buttonSound);
 	bool checkMouseEvent(SDL_Event& e, SDL_Rect a);
 	bool getPlayState();
 	bool getHelpState();

@@ -15,7 +15,7 @@ public:
 	void loadTileSet(string path);
 	void drawMap(int mapX);
 	void createTilesSprites();
-	void setPortalPosY();
+	void setPosY();
 	void renderPortal(int mapX);
 	const int TILE_WIDTH = 32;
 	const int TILE_HEIGHT = 32;
@@ -24,12 +24,17 @@ public:
 	int map[20][720];
 private:
 	LTexture portalTexture;
+	LTexture checkPointTexture;
 	SDL_Rect src, dest;
 	SDL_Rect gTileClip[1160];
 	SDL_Rect portalClips[6];
+	SDL_Rect checkPointClips[13];
 	LTexture mTileTexture;
 	int mWidth, mHeight;
+	int checkPointY1, checkPointY2;
 	int portalWidth, portalHeight;
+	int checkPointWidth, checkPointHeight;
 	int yPortal;
 	int frame = 0;
+	int checkPointFrame = 0;
 };

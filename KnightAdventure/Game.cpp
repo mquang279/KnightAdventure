@@ -76,6 +76,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		{
 			printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 		}
+		if (!(Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3))
+		{
+			cout << "Sound can not initilize!" << Mix_GetError() << endl;
+		}
+		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+		{
+			printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+		}
+
 		isRunning = true;
 	}
 }
@@ -85,7 +94,6 @@ void Game::loadMedia() {
 	playerObj.loadImage("assets/characters/playerAnimation.png");
 	playerObj.reload();
 	playerObj.setSpriteClips();
-	playerObj.setPosX(720 * 32 - 360);
 	//Load Game State
 	gameMenu.loadMenu();
 	helpMenu.loadMenu();
@@ -108,10 +116,13 @@ void Game::loadMedia() {
 	}
 	//Enemy Load End
 
-	// Load Level Start
-
-
-	// Load Level End
+	themeMusic = Mix_LoadMUS("assets/sfx/game_theme.mp3");
+	playMusic = Mix_LoadMUS("assets/sfx/game_theme.mp3");
+	buttonSound = Mix_LoadWAV("assets/sfx/button.mp3");
+	hitSound = Mix_LoadWAV("assets/sfx/playerhit.wav");
+	finishSound = Mix_LoadWAV("assets/sfx/levelfinish.wav");
+	buffSound = Mix_LoadWAV("assets/sfx/buff.mp3");
+	enemyHit = Mix_LoadWAV("assets/sfx/enemyhit.mp3");
 
 	//Health Add
 	Potion_list = createPotionList();
@@ -143,16 +154,21 @@ void Game::render(){
 	SDL_RenderClear(gRenderer);
 	//Home Render Start
 	if (homeScreen) {
-		gameMenu.render(e);
+		gameMenu.render(e, *buttonSound);
 		currentLevel = 0;
+		if (Mix_PlayingMusic() == 0)
+		{
+			Mix_PlayMusic(themeMusic, -1);
+		}
 	}
-	//Home Render End
 
+	//Home Render End
 	//Select Level Menu Start
 	if (gameMenu.getPlayState()) {
 		if (!homeScreen) {
 			currentLevel = levelSelect.getSelectLevel(e);
 			if (currentLevel != 0) {
+				checkPoint = 0;
 				levelControl.loadLevel(currentLevel);
 				levelControl.setFrame(0);
 				for (int i = 0; i < Potion_list.size(); i++) {
@@ -220,6 +236,7 @@ void Game::render(){
 					Health_Bar.setSpriteFrame(playerHealth);
 					Health_Bar.render();
 				}
+				Mix_PlayChannel(-1, buffSound, 0);
 				potionCollistionStatus[i] = true;
 				playerObj.setBuffFinish(false);
 			}
@@ -234,6 +251,7 @@ void Game::render(){
 				//Player Attack Collision
 				if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
 					collisionStatus[i] = true;
+					Mix_PlayChannel(-1, enemyHit, 0);
 				}
 				if (!collisionStatus[i]) {
 					p_enemy->render(playerObj.getMapX(), pauseGame);
@@ -244,8 +262,9 @@ void Game::render(){
 
 				//Enemy Attack Collision
 
-				if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8 && !playerObj.getDeadStatus()) {
+				if (checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerHitbox()) && !collisionStatus[i] && beingAttackedStatus[i] % 80 == 0 && playerHealth != 8 && !playerObj.getDeadStatus() && p_enemy->getPosY() <= 640) {
 					playerHealth++;
+					Mix_PlayChannel(-1, hitSound, 0);
 					Health_Bar.setSpriteFrame(playerHealth);
 					PlayerHitEffect.render();
 				}
@@ -265,7 +284,8 @@ void Game::render(){
 		x2 = playerObj.getPlayerHitbox().x + playerObj.getMapX() + playerObj.getPlayerHitbox().w;
 		y = playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h;
 		if ((levelControl.getCurrentTrap(currentLevel)->map[y / 32][x1 / 32] != 1 || levelControl.getCurrentTrap(currentLevel)->map[y / 32][x2 / 32] != 1)) {
-			if (trapCollisionTime % 100 == 0) {
+			if (trapCollisionTime % 100 == 0 && playerHealth < 8) {
+				Mix_PlayChannel(-1, hitSound, 0);
 				playerHealth++;
 				Health_Bar.setSpriteFrame(playerHealth);
 			}
@@ -275,14 +295,22 @@ void Game::render(){
 		else trapCollisionTime = 0;
 
 		// Health Status Start
-
+		if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 * 2 / 3 && checkPoint < TOTAL_TILES_ROW * 32 * 2 / 3) {
+			checkPoint = TOTAL_TILES_ROW * 32 * 2 / 3;
+			cout << "checkpoint 1" << endl;
+		}
+		else if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 / 3 && checkPoint < TOTAL_TILES_ROW * 32 / 3) {
+			checkPoint = TOTAL_TILES_ROW * 32 / 3;
+			cout << "checkpoint 2" << endl;
+		}
 		if (playerObj.getPosY() >= 1400) {
 			Health_Bar.setSpriteFrame(playerHealth);
-			playerObj.setPosX(0);
+			playerObj.setPosX(checkPoint);
 			playerObj.setPosY(0);
 		}
 
 		if (playerObj.getPosY() == 1200) {
+			Mix_PlayChannel(-1, hitSound, 0);
 			playerHealth++;
 		}
 
@@ -370,6 +398,7 @@ void Game::render(){
 		currentLevelFinish = false;
 	}
 	if (levelFinish.getNextLevelState() && currentLevel < 18) {
+		Mix_PlayChannel(-1, finishSound, 0);
 		currentLevel++;
 		currentLevelFinish = false;
 		levelControl.loadLevel(currentLevel);
@@ -384,6 +413,7 @@ void Game::render(){
 }
 
 void Game::reload() {
+	checkPoint = 0;
 	//Player Reload
 	playerObj.reload();
 	//Health Reload

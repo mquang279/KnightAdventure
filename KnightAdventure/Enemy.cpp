@@ -28,7 +28,7 @@ void Enemy::setEnemyFrames(int randomNum) {
 	}
 	else if (randomNum == 2) {
 		ENEMY_FRAMES = 8;
-		ENEMY_DIE_FRAMES = 7;
+		ENEMY_DIE_FRAMES = 8;
 	}
 	else if (randomNum == 3) {
 		ENEMY_FRAMES = 4;

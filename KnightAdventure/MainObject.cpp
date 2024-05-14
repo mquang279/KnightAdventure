@@ -28,6 +28,7 @@ MainObject::MainObject() {
 	isDead = false;
 	buffFinish = false;
 	buffFrame = 0;
+	playerHitBox = { 0,0,0,0 };
 }
 
 bool MainObject::loadImage(string path) {

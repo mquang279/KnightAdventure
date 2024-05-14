@@ -57,7 +57,6 @@ public:
 	bool getBuffFinish();
 	void setBuffFinish(bool status);
 private:
-	int numberClips;
 	SDL_RendererFlip flip;
 	float mVelX, mVelY;
 	float mPosX, mPosY;
