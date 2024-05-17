@@ -173,7 +173,14 @@
     <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Potion.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Variables.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="KnightAdventure.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\logo\logo_.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

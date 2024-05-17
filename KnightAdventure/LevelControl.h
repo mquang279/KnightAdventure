@@ -16,7 +16,7 @@ public:
 	Map* getCurrentGround(int level);
 	Map* getCurrentGrass(int level);
 	Map* getCurrentTrap(int level);
-	void setFrame(int x);
+	//void setFrame(int x);
 private:
 	Map* ground;
 	Map* grass;
@@ -24,5 +24,5 @@ private:
 	LTexture headerTexture;
 	LTexture currentLevel;
 	LTexture loadPicture;
-	int frame = 0;
+	int frameStart;
 };

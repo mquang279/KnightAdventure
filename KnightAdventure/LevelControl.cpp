@@ -1,6 +1,7 @@
 #include "LevelControl.h"
 
 LevelControl::LevelControl() {
+	frameStart = 0;
 }
 
 LevelControl::~LevelControl() {
@@ -25,12 +26,12 @@ void LevelControl::loadLevel(int level) {
 	ground->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_ground.map");
 	ground->setPosY();
 	grass->loadMap("assets/level/level" + to_string(level) + "/" + "level" + to_string(level) + "_final_grass.map");
+	frameStart = SDL_GetTicks();
 }
 
 void LevelControl::renderLoadScreen(int level) {
-	if (frame < 90) {
+	if ((SDL_GetTicks() - frameStart) / 1000 < 3) {
 		currentLevel.render((1280 - currentLevel.getWidth()) / 2, (640 - currentLevel.getHeight())/ 2);
-		frame++;
 	}
 }
 
@@ -53,6 +54,3 @@ Map* LevelControl::getCurrentTrap(int level){
 	return trap;
 }
 
-void LevelControl::setFrame(int x) {
-	frame = x;
-}

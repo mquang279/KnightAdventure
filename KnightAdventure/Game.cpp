@@ -170,7 +170,7 @@ void Game::render(){
 			if (currentLevel != 0) {
 				checkPoint = 0;
 				levelControl.loadLevel(currentLevel);
-				levelControl.setFrame(0);
+				//levelControl.setFrame(0);
 				for (int i = 0; i < Potion_list.size(); i++) {
 					Potion_list[i]->setPosY(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel) , playerObj.getMapX());
 				}
@@ -295,14 +295,17 @@ void Game::render(){
 		else trapCollisionTime = 0;
 
 		// Health Status Start
-		if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 * 2 / 3 && checkPoint < TOTAL_TILES_ROW * 32 * 2 / 3) {
+		if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 * 2 / 3 && checkPoint < TOTAL_TILES_ROW * 32 * 2 / 3 && playerObj.getPosY() < 640) {
 			checkPoint = TOTAL_TILES_ROW * 32 * 2 / 3;
-			cout << "checkpoint 1" << endl;
+			Mix_PlayChannel(-1, buffSound, 0);
+			playerObj.setBuffFinish(false);
 		}
-		else if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 / 3 && checkPoint < TOTAL_TILES_ROW * 32 / 3) {
+		else if (playerObj.getPosX() >= TOTAL_TILES_ROW * 32 / 3 && checkPoint < TOTAL_TILES_ROW * 32 / 3 && playerObj.getPosY() < 640) {
 			checkPoint = TOTAL_TILES_ROW * 32 / 3;
-			cout << "checkpoint 2" << endl;
+			Mix_PlayChannel(-1, buffSound, 0);
+			playerObj.setBuffFinish(false);
 		}
+		if (!playerObj.getBuffFinish()) playerObj.renderBuffEffect();
 		if (playerObj.getPosY() >= 1400) {
 			Health_Bar.setSpriteFrame(playerHealth);
 			playerObj.setPosX(checkPoint);
@@ -322,6 +325,7 @@ void Game::render(){
 		if ((playerHealth < 8 && !currentLevelFinish)) {
 			playerObj.move(*levelControl.getCurrentGround(currentLevel));
 			playerObj.render();
+			playerObj.renderBuffEffect();
 		}
 		else if (!playerObj.getOnGroundStatus()) {
 			playerObj.move(*levelControl.getCurrentGround(currentLevel));
@@ -403,7 +407,7 @@ void Game::render(){
 		currentLevelFinish = false;
 		levelControl.loadLevel(currentLevel);
 		levelFinish.setNextLevelState(false);
-		levelControl.setFrame(0);
+		//levelControl.setFrame(0);
 		reload();
 	}
 	else if (levelFinish.getNextLevelState()) homeScreen = true;
