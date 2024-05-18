@@ -1,4 +1,4 @@
-# Knight Adventure
+# Knight Adventure - 23021669 Bùi Minh Quang
 Dự án trò chơi này là một phần của môn học "Lập trình nâng cao" tại Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội.
 
 # Mô tả
