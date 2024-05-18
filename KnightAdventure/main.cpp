@@ -5,7 +5,7 @@ Game* game = nullptr;
 
 int main(int argc, char* argv[]) {
 
-	const int FPS = 240;
+	const int FPS = 85;
 	Uint32 frameStart;
 	int frameTime;
 	
