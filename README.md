@@ -84,7 +84,7 @@ __8. Màn hình hoàn thành__
 ![image](https://github.com/mquang09/KnightAdventure/assets/101109835/cc782ce6-b2ff-49f3-b3df-5872a26a4624)
 
 Khi người chơi đi đến cuối bản đồ (Đã hoàn thành màn chơi). Màn hình hoàn thành sẽ hiện ra:
-- Nếu chọn `Next Level` người chơi sẽ được dịch chuyển đến màn chơi tiếp theo.
+- Nếu chọn `Next Level` thì `Cổng dịch chuyển` sẽ đưa người chơi đến màn chơi tiếp theo.
 - Nếu chọn `Home` màn hình sẽ chuyển về `Giao diện ban đầu`.
 
 
