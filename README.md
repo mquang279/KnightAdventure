@@ -1,5 +1,5 @@
 # Knight Adventure
-Dự án trò chơi này là một phần của môn học "Lập trình nâng cao" tại Trường Đại học Công nghê - Đại học Quốc gia Hà Nội.
+Dự án trò chơi này là một phần của môn học "Lập trình nâng cao" tại Trường Đại học Công nghệ - Đại học Quốc gia Hà Nội.
 
 # Mô tả
 - Dự án này được phát triển bằng __ngôn ngữ lập trình C++__ và sử dụng __thư viện SDL2__.
