@@ -249,7 +249,7 @@ void Game::render(){
 			if (p_enemy != NULL && !p_enemy->getTrapHit()) {
 				p_enemy->move(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel));
 				//Player Attack Collision
-				if (playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
+				if (abs((playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h) - (p_enemy->getPosY() + p_enemy->getHeight()) <= 10) && playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
 					collisionStatus[i] = true;
 					Mix_PlayChannel(-1, enemyHit, 0);
 				}
