@@ -372,6 +372,7 @@ bool MainObject::getDeadStatus() {
 void MainObject::reload() {
 	dieFrame = 0;
 	isDead = false;
+	buffFinish = false;
 	mPosX = 0;
 	mPosY = 0;
 }

@@ -168,6 +168,7 @@ void Game::render(){
 		if (!homeScreen) {
 			currentLevel = levelSelect.getSelectLevel(e);
 			if (currentLevel != 0) {
+				playerObj.setBuffFinish(false);
 				checkPoint = 0;
 				levelControl.loadLevel(currentLevel);
 				//levelControl.setFrame(0);
@@ -305,8 +306,9 @@ void Game::render(){
 			Mix_PlayChannel(-1, buffSound, 0);
 			playerObj.setBuffFinish(false);
 		}
-		if (!playerObj.getBuffFinish()) playerObj.renderBuffEffect();
+		
 		if (playerObj.getPosY() >= 1400) {
+			playerObj.setBuffFinish(false);
 			Health_Bar.setSpriteFrame(playerHealth);
 			playerObj.setPosX(checkPoint);
 			playerObj.setPosY(0);
@@ -355,6 +357,9 @@ void Game::render(){
 		}
 		if (currentLevelFinish) {
 			levelFinish.render(e);
+		}
+		if (!playerObj.getBuffFinish()) {
+			playerObj.renderBuffEffect();
 		}
 		// Health Status End
 		levelControl.renderLoadScreen(currentLevel);
