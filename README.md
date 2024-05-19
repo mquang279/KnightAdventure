@@ -71,7 +71,15 @@ __6. Cổng dịch chuyển__
 
 Có khả năng giúp người chơi dịch chuyển sang màn chơi khác.
 
-__7. Màn hình kết thúc__
+__7. Màn hình tạm dừng__
+
+![image](https://github.com/mquang09/KnightAdventure/assets/101109835/0c1ca44e-ee39-44d7-b704-402d243096de)
+
+Khi người chơi bấm nút `ESC` màn hình tạm dừng sẽ hiện ra:
+- Người chơi có thể chọn `Continue` hoặc bấm lại nút `ESC` để tiếp tục trò chơi.
+- Người chơi có thể chọn `Home` để quay trở lại màn hình bắt đầu.
+
+__8. Màn hình kết thúc__
 
 ![image](https://github.com/mquang09/KnightAdventure/assets/101109835/4c3d227f-7353-440a-9e4b-db2318c6cf0f)
 
@@ -79,7 +87,7 @@ Khi lượng máu của người chơi trở về 0. Màn hình kết thúc sẽ
 - Nếu chọn `Play Again` người chơi sẽ được hồi sinh tại vị trí ban đầu của Level và trò chơi sẽ bắt đầu lại từ đầu.
 - Nếu chọn `Home` màn hình sẽ chuyển về `Giao diện ban đầu`.
 
-__8. Màn hình hoàn thành__
+__9. Màn hình hoàn thành__
 
 ![image](https://github.com/mquang09/KnightAdventure/assets/101109835/cc782ce6-b2ff-49f3-b3df-5872a26a4624)
 
