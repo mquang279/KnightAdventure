@@ -7,7 +7,7 @@ Dự án trò chơi này là một phần của môn học "Lập trình nâng c
 - Trong __Knight Adventure__, người chơi sẽ bước vào một thế giới phong phú đầy màu sắc và mạo hiểm. Họ sẽ nhập vai vào một chiến binh dũng mãnh, sẵn sàng đối đầu với những thử thách khốc liệt, những quái vật cản đường và tiến lên phía trước.
 
 # Cách tải game
-- Bước 1: Tải xuống và giải nén file `KnightAdventure-master.zip`.
+- Bước 1: [Tải xuống](https://github.com/mquang09/KnightAdventure/archive/refs/heads/master.zip) và giải nén file `KnightAdventure-master.zip`.
 - Bước 2: Vào thư mục `KnightAdventure` nơi chứa file cpp và chạy file `KnightAdventure.exe` để bắt đầu chơi.
 
 # Hướng dẫn chơi
