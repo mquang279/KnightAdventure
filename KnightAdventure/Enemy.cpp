@@ -10,7 +10,17 @@ Enemy::Enemy() {
 	frame = 0;
 	mWidth = 0;
 	mHeight = 0;
+	mDieHeight = 0;
+	mDieWidth = 0;
 	ENEMY_FRAMES = 0;
+	ENEMY_DIE_FRAMES = 0;
+	mEnemyHitBox = { 0,0,0,0 };
+	for (int i = 0; i < 8; i++) {
+		mSpriteClipsEnemy[i] = { 0,0,0,0 };
+	}
+	for (int i = 0; i < 8; i++) {
+		mSpriteClipsEnemyDie[i] = {0,0,0,0};
+	}
 	dieFinish = false;
 	dieFrame = 0;
 	trapHit = false;

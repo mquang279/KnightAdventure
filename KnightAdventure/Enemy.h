@@ -44,6 +44,6 @@ private:
 	bool trapHit;
 	SDL_RendererFlip flip;
 	SDL_Rect mEnemyHitBox;
-	SDL_Rect mSpriteClipsEnemy[100];
-	SDL_Rect mSpriteClipsEnemyDie[7];
+	SDL_Rect mSpriteClipsEnemy[8];
+	SDL_Rect mSpriteClipsEnemyDie[8];
 };
