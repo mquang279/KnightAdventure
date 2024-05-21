@@ -306,7 +306,6 @@ void Game::render(){
 			Mix_PlayChannel(-1, buffSound, 0);
 			playerObj.setBuffFinish(false);
 		}
-		
 		if (playerObj.getPosY() >= 1400) {
 			playerObj.setBuffFinish(false);
 			Health_Bar.setSpriteFrame(playerHealth);

@@ -102,7 +102,6 @@ StyleCopReport.xml
 _Chutzpah*
 
 # Visual C++ cache files
-KnightAdventure/x64/
 ipch/
 *.aps
 *.ncb
