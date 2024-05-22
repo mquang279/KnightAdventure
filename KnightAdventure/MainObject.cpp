@@ -84,7 +84,7 @@ void MainObject::render() {
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
 		currentClip = &mSpriteClips[0][frame / 7];
 		if (flip == SDL_FLIP_NONE) {
-			mFixX = -16;
+			mFixX = -12;
 			mPlayerHitBoxX = 64;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
@@ -96,7 +96,7 @@ void MainObject::render() {
 			mAttackHitBoxH = -48;
 		}
 		else {
-			mFixX = +16;
+			mFixX = 12;
 			mPlayerHitBoxX = 48;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
@@ -112,14 +112,14 @@ void MainObject::render() {
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
 		currentClip = &mSpriteClips[1][frame / 7];
 		if (flip == SDL_FLIP_NONE) {
-			mFixX = 20;
+			mFixX = 14;
 			mPlayerHitBoxX = 32;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
 		}
 		else {
-			mFixX = -20;
+			mFixX = -14;
 			mPlayerHitBoxX = 80;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
@@ -128,7 +128,14 @@ void MainObject::render() {
 	}
 	if (mVelY != 0) {
 		currentClip = &mSpriteClips[2][0];
+		if (flip == SDL_FLIP_NONE) {
+			mFixX = -10;
+		}
+		else {
+			mFixX = 10;
+		}
 	}
+	
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
 	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClips[0][0].w + mAttackHitBoxW, mSpriteClips[0][0].h + mAttackHitBoxH };
 	SDL_Rect hitBox2 = { mPosX - mapX + mFixX + mPlayerHitBoxX, mPosY + mFixY + mPlayerHitBoxY, currentClip->w + mPlayerHitBoxW, currentClip->h + mPlayerHitBoxH };
