@@ -152,16 +152,16 @@ void Game::update(){
 void Game::render(){
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
+	if (Mix_PlayingMusic() == 0)
+	{
+		Mix_PlayMusic(themeMusic, -1);
+	}
 	//Home Render Start
 	if (homeScreen) {
 		gameMenu.render(e, *buttonSound);
 		currentLevel = 0;
-		if (Mix_PlayingMusic() == 0)
-		{
-			Mix_PlayMusic(themeMusic, -1);
-		}
+		
 	}
-
 	//Home Render End
 	//Select Level Menu Start
 	if (gameMenu.getPlayState()) {
