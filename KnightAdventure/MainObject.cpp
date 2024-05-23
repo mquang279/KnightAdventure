@@ -113,7 +113,7 @@ void MainObject::render() {
 		currentClip = &mSpriteClips[1][frame / 7];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = 14;
-			mPlayerHitBoxX = 32;
+			mPlayerHitBoxX = 35;
 			mPlayerHitBoxY = 32;
 			mPlayerHitBoxW = -112;
 			mPlayerHitBoxH = -64;
@@ -129,10 +129,16 @@ void MainObject::render() {
 	if (mVelY != 0) {
 		currentClip = &mSpriteClips[2][0];
 		if (flip == SDL_FLIP_NONE) {
-			mFixX = -10;
+			mPlayerHitBoxX = 50;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64;
 		}
 		else {
-			mFixX = 10;
+			mPlayerHitBoxX = 64;
+			mPlayerHitBoxY = 32;
+			mPlayerHitBoxW = -112;
+			mPlayerHitBoxH = -64;
 		}
 	}
 	
