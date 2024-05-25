@@ -36,7 +36,7 @@ vector<Potion*> createPotionList() {
 	for (int i = 0; i < 10; i++) {
 		Potion* p_potion = potion_obj + i;
 		if (p_potion != NULL) {
-			p_potion->loadPotion(6000 + rand() % 600 + i * 4500);
+			p_potion->loadPotion(6000 + rand() % 600 + i * 4800);
 			list_Potion.push_back(p_potion);
 		}
 	}
@@ -250,7 +250,7 @@ void Game::render(){
 			if (p_enemy != NULL && !p_enemy->getTrapHit()) {
 				p_enemy->move(*levelControl.getCurrentGround(currentLevel), *levelControl.getCurrentTrap(currentLevel));
 				//Player Attack Collision
-				if (abs((playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h) - (p_enemy->getPosY() + p_enemy->getHeight()) <= 10) && playerObj.getAttackTime() >= 10 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i] && playerObj.getPlayerCurrentFrame() / 6 >= 3) {
+				if (abs((playerObj.getPlayerHitbox().y + playerObj.getPlayerHitbox().h) - (p_enemy->getPosY() + p_enemy->getHeight()) <= 10) && playerObj.getAttackTime() >= 5 && playerObj.getPlayerStatus() == 3 && checkCollision(p_enemy->getEnemyHitbox(), playerObj.getPlayerAttackHitbox()) && !collisionStatus[i]) {
 					collisionStatus[i] = true;
 					Mix_PlayChannel(-1, enemyHit, 0);
 				}

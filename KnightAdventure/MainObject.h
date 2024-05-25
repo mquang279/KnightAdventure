@@ -7,10 +7,10 @@
 const int ANIMATION_FRAMES = 8;
 const int TOTAL_ANIMATION = 4;
 const int TILE_SIZE = 32;
-const float GRAVITY_SPEED = 0.80;
-const float MAX_GRAVITY_SPEED = 15;
-const float JUMP_VAL = 16;
-const float POS_VEL = 4.5;
+const float GRAVITY_SPEED = 1;
+const float MAX_GRAVITY_SPEED = 20;
+const float JUMP_VAL = 17;
+const float POS_VEL = 6.25;
 const int BUFF_FRAME = 16;
 
 typedef struct Input {
@@ -36,7 +36,6 @@ public:
 	void move(Map& map_data);
 	void render();
 	void setSpriteClips();
-	void setWidthHeight();
 	void renderBuffEffect();
 	int getMapX();
 	void centerEntityOnMap();

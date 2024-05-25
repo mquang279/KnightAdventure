@@ -61,13 +61,13 @@ void MainObject::setSpriteClips() {
 }
 
 void MainObject::render() {
-	SDL_Rect* currentClip = &mSpriteClips[2][frame / 7];
+	SDL_Rect* currentClip = &mSpriteClips[2][frame / 5];
 	attackAnimationFinished = false;
 	mFixY = 24;
 	mFixX = 0;
 	if (playerStatus == WALK_LEFT && inputType.left_ == 1){
 		flip = SDL_FLIP_HORIZONTAL;
-		currentClip = &mSpriteClips[2][frame / 7];
+		currentClip = &mSpriteClips[2][frame / 5];
 		mPlayerHitBoxX = 48;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
@@ -75,14 +75,14 @@ void MainObject::render() {
 	}
 	else if (playerStatus == WALK_RIGHT && inputType.right_ == 1){
 		flip = SDL_FLIP_NONE;
-		currentClip = &mSpriteClips[2][frame / 7];
+		currentClip = &mSpriteClips[2][frame / 5];
 		mPlayerHitBoxX = 64;
 		mPlayerHitBoxY = 32;
 		mPlayerHitBoxW = -112;
 		mPlayerHitBoxH = -64;
 	}
 	if (playerStatus == PLAYER_ATTACK && onGround && mVelX == 0 && mVelY == 0 && inputType.up_ == 0) {
-		currentClip = &mSpriteClips[0][frame / 7];
+		currentClip = &mSpriteClips[0][frame / 5];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = -12;
 			mPlayerHitBoxX = 64;
@@ -110,7 +110,7 @@ void MainObject::render() {
 		attackAnimationTime++;
 	}
 	if (mVelX == 0 && mVelY == 0 && playerStatus != PLAYER_ATTACK && inputType.left_ == 0 && inputType.right_ == 0) {
-		currentClip = &mSpriteClips[1][frame / 7];
+		currentClip = &mSpriteClips[1][frame / 5];
 		if (flip == SDL_FLIP_NONE) {
 			mFixX = 14;
 			mPlayerHitBoxX = 35;
@@ -126,7 +126,7 @@ void MainObject::render() {
 			mPlayerHitBoxH = -64;
 		}
 	}
-	if (mVelY != 0) {
+	if (!onGround) {
 		currentClip = &mSpriteClips[2][0];
 		if (flip == SDL_FLIP_NONE) {
 			mPlayerHitBoxX = 50;
@@ -141,6 +141,7 @@ void MainObject::render() {
 			mPlayerHitBoxH = -64;
 		}
 	}
+
 	
 	mPlayerTexture.render(mPosX - mapX + mFixX, mPosY + mFixY, currentClip, NULL, NULL, flip);
 	SDL_Rect hitBox1 = { mPosX - mapX + mFixX + mAttackHitBoxX, mPosY + mFixY + mAttackHitBoxY, mSpriteClips[0][0].w + mAttackHitBoxW, mSpriteClips[0][0].h + mAttackHitBoxH };
@@ -151,7 +152,7 @@ void MainObject::render() {
 	//SDL_RenderDrawRect(Game::gRenderer, &playerHitBox);
 	//SDL_RenderDrawRect(Game::gRenderer, &attackHitBox);
 	frame++;
-	if (frame / 7 >= ANIMATION_FRAMES) frame = 0;
+	if (frame / 5 >= ANIMATION_FRAMES) frame = 0;
 }
 
 void MainObject::renderDeadFrame() {

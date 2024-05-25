@@ -5,7 +5,7 @@ Enemy::Enemy() {
 	onGround = false;
 	mPosX = 0;
 	mPosY = 0;
-	mVelX = -2;
+	mVelX = -3;
 	mVelY = 0;
 	frame = 0;
 	mWidth = 0;
@@ -93,14 +93,14 @@ void Enemy::render(int mapX, bool pauseGame) {
 			mEnemyHitBox.y = mPosY;
 			//SDL_RenderDrawRect(Game::gRenderer, &mEnemyHitBox);
 			frame++;
-			if (frame / 8 >= ENEMY_FRAMES) {
+			if (frame / 6 >= ENEMY_FRAMES) {
 				frame = 0;
 			}
 		}
 		else {
 			frame = 0;
 		}
-		mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 8], NULL, NULL, flip);
+		mEnemyTexture.render(mPosX - mapX, mPosY, &mSpriteClipsEnemy[frame / 6], NULL, NULL, flip);
 	}
 }
 
@@ -108,9 +108,9 @@ void Enemy::renderDieFrame(int mapX) {
 	mVelX = 0;
 	mVelY = 0;
 	if (dieFinish == false) {
-		mEnemyDie.render(mPosX - mapX, mPosY, &mSpriteClipsEnemyDie[dieFrame / 8], NULL, NULL, flip);
+		mEnemyDie.render(mPosX - mapX, mPosY, &mSpriteClipsEnemyDie[dieFrame / 6], NULL, NULL, flip);
 		dieFrame++;
-		if (dieFrame / 8 >= ENEMY_DIE_FRAMES) {
+		if (dieFrame / 6 >= ENEMY_DIE_FRAMES) {
 			dieFinish = true;
 		}
 	}
