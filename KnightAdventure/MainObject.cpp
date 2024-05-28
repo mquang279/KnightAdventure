@@ -397,9 +397,9 @@ bool MainObject::getOnGroundStatus() {
 
 void MainObject::renderBuffEffect() {
 	if (!buffFinish) {
-		mBuffTexture.render( mPosX - mapX + 25, mPosY + 30, &mSpriteClipsBuff[buffFrame / 12], NULL, NULL, flip);
+		mBuffTexture.render( mPosX - mapX + 25, mPosY + 30, &mSpriteClipsBuff[buffFrame / 7], NULL, NULL, flip);
 		buffFrame++;
-		if (buffFrame / 12 >= BUFF_FRAME) {
+		if (buffFrame / 7 >= BUFF_FRAME) {
 			buffFinish = true;
 			buffFrame = 0;
 		}

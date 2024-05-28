@@ -47,9 +47,9 @@ void HelpMenu::loadMenu() {
 void HelpMenu::render(SDL_Event& e) {
 	exitState = false;
 	mHelpBackground.render(0, 0);
-	mAnimation.render(145, 220, &mSpriteClips[1][frame / 9]);
-	mAnimation.render(560, 220, &mSpriteClips[0][frame / 9]);
-	mAnimation.render(985, 220, &mSpriteClips[2][frame / 9]);
+	mAnimation.render(145, 220, &mSpriteClips[1][frame / 6]);
+	mAnimation.render(560, 220, &mSpriteClips[0][frame / 6]);
+	mAnimation.render(985, 220, &mSpriteClips[2][frame / 6]);
 	if (checkMouse(e, exitButtonPos)) {
 		exitButton.render(exitButtonPos.x, exitButtonPos.y, &spriteClips[1]);
 		textPosChange = 12;
@@ -63,7 +63,7 @@ void HelpMenu::render(SDL_Event& e) {
 	}
 	mHelpText.render((1280 - mHelpText.getWidth()) / 2, 526 + textPosChange);
 	frame++;
-	if (frame / 9 >= 8) frame = 0;
+	if (frame / 6 >= 8) frame = 0;
 	moveText.render(133, 92);
 	attackText.render(514, 92);
 	jumpText.render(977, 92);
